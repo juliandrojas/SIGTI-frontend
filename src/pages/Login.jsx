@@ -1,15 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 export default function Login() {
   const misEnlaces = [{ text: "Volver a inicio", href: "/" }];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Email:", email);
     console.log("Password:", password);
+    navigate("/admin");
   };
 
   return (
@@ -27,7 +30,7 @@ export default function Login() {
               <p className="text-muted small">Mesa de Ayuda y Gestión de TI</p>
             </div>
 
-            {/* ✅ onSubmit asignado al form */}
+            {/* onSubmit asignado al form */}
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="email" className="form-label">
