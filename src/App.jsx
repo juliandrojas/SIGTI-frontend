@@ -3,6 +3,8 @@ import AdminLayout from "./layouts/AdminLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import EditRole from "./pages/admin/EditRole";
+import Roles from "./pages/admin/Roles";
 import Home from "./pages/public/Home";
 import Recovery from "./pages/public/Recovery";
 import Register from "./pages/public/Register";
@@ -15,6 +17,8 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/recovery" element={<Recovery />} />
+        <Route path="/roles" element={<Roles />} />
+        <Route path="/roles/edit/:id" element={<EditRole />} />
       </Route>
       <Route path="/login" element={<Login />} />
       {/* Rutas del Panel de Administración */}
