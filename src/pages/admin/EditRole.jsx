@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import api from '../../api/axios';
 
 export default function EditRole() {
   const { id } = useParams();
@@ -13,7 +13,7 @@ export default function EditRole() {
   useEffect(() => {
     const fetchRole = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/roles/${id}`);
+        const response = await api.get(`/roles/${id}`);
         setName(response.data.name);
       } catch (err) {
         console.error("No se pudo cargar el rol:", err);
@@ -32,7 +32,7 @@ export default function EditRole() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:3000/roles/${id}`, { name });
+      await api.patch(`/roles/${id}`, { name });
       
       // Volver a la lista de roles
       navigate("/roles");

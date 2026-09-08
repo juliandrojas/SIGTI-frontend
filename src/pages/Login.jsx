@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 import Navbar from "../components/Navbar";
 
 export default function Login() {
@@ -16,7 +16,7 @@ export default function Login() {
 
     try {
       // Petición POST enviando usuario y clave al backend
-      const response = await axios.post("http://localhost:3000/users/login", {
+      const response = await api.post("/users/login", {
         username,
         password,
       });

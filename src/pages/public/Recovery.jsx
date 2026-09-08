@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import api from "../../api/axios";
 
 export default function Recovery() {
   const [email, setEmail] = useState("");
@@ -16,7 +16,7 @@ export default function Recovery() {
 
     try {
       // Endpoint que procesará el envío de correo de restablecimiento
-      await axios.post("http://localhost:3000/api/auth/recovery", { email });
+      await api.post("/api/auth/recovery", { email });
       setSuccess(true);
       setEmail("");
     } catch (err) {
