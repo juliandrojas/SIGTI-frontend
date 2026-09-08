@@ -35,7 +35,7 @@ export default function EditRole() {
       await api.patch(`/roles/${id}`, { name });
       
       // Volver a la lista de roles
-      navigate("/roles");
+      navigate("/admin/roles");
     } catch (err) {
       const msg = err.response?.data?.message || "Error al actualizar el rol.";
       console.error(msg);
@@ -69,7 +69,7 @@ export default function EditRole() {
         </div>
 
         <div className="d-flex gap-2">
-          <Link to="/roles" className="btn btn-secondary w-50">
+          <Link to="/admin/roles" className="btn btn-secondary w-50">
             Cancelar
           </Link>
           <button type="submit" className="btn btn-primary w-50">
