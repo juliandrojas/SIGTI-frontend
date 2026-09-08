@@ -2,17 +2,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Navbar from "../components/Navbar";
+import { saveSession } from "../utils/auth";
 
 export default function Login() {
   const misEnlaces = [{ text: "Volver a inicio", href: "/" }];
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       // Petición POST enviando usuario y clave al backend
@@ -21,12 +24,7 @@ export default function Login() {
         password,
       });
 
-      console.log("Respuesta del servidor:", response.data);
-
-      // Si el backend devuelve un token, lo guardas
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-      }
+      saveSession(response.data);
 
       // Redirigir al panel
       navigate("/admin");
@@ -34,6 +32,8 @@ export default function Login() {
       // Captura el mensaje que programaste en el backend o muestra uno por defecto
       const msg = err.response?.data?.message || "Credenciales incorrectas";
       setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,8 +88,8 @@ export default function Login() {
               </div>
 
               <div className="d-grid mt-4">
-                <button type="submit" className="btn btn-primary">
-                  Iniciar Sesión
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? "Ingresando..." : "Iniciar Sesión"}
                 </button>
               </div>
               <div className="mt-4 d-flex align-items-center gap-2">

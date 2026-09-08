@@ -1,15 +1,8 @@
-import { Link } from "react-router-dom";
-
 export default function AdminDashboard() {
-  const handlePress = () => {
-    console.log("Cerrando sesión");
-  };
-
   return (
-    <div className="d-flex justify-content-center mt-5">
-      <Link to="/" onClick={handlePress} className="btn btn-primary">
-        Cerrar sesión
-      </Link>
+    <div className="container py-4">
+      <h2 className="fw-bold">Panel de administración</h2>
+      <p className="text-muted">Sesión iniciada correctamente.</p>
     </div>
   );
 }
