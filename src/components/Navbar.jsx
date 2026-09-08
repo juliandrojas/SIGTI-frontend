@@ -3,7 +3,7 @@ export default function Navbar({ brand = "Navbar", links = [] }) {
     <nav className="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
       <div className="container-fluid">
         {/* Título / Marca a la izquierda */}
-        <a className="navbar-brand text-white fw-bold" href="#">
+        <a className="navbar-brand text-white fw-bold" href="/">
           {brand}
         </a>
 
