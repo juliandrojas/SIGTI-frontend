@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../../api/axios";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -19,7 +19,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/users/create", {
+      await api.post("/users/create", {
         name,
         firstLastName,
         secondLastName,

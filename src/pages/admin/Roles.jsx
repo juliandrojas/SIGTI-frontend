@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import api from "../../api/axios";
 
 export default function Roles() {
   const [roles, setRoles] = useState([]);
@@ -10,7 +10,7 @@ export default function Roles() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/roles");
+        const response = await api.get("/roles");
         setRoles(response.data);
       } catch (err) {
         console.error("Error al obtener los datos de la API:", err);
