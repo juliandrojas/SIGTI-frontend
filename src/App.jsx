@@ -17,14 +17,13 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/recovery" element={<Recovery />} />
-        <Route path="/roles" element={<Roles />} />
-        <Route path="/roles/edit/:id" element={<EditRole />} />
       </Route>
       <Route path="/login" element={<Login />} />
       {/* Rutas del Panel de Administración */}
       <Route path="/admin" element={<AdminLayout/>}>
         <Route index element={<AdminDashboard />} />
-        {/* <Route path="tickets" element={} /> */}
+        <Route path="roles" element={<Roles />} />
+        <Route path="roles/edit/:id" element={<EditRole />} />
       </Route>
     </Routes>
 

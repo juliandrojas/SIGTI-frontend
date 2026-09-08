@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://sigti-backend.vercel.app';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, headers: {
+  baseURL: apiBaseUrl, headers: {
         'Content-Type': 'application/json',
     }
 });
