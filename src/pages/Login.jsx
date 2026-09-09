@@ -5,7 +5,6 @@ import Navbar from "../components/Navbar";
 import { getToken, saveSession } from "../utils/auth";
 
 export default function Login() {
-  const misEnlaces = [{ text: "Volver a inicio", href: "/" }];
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -43,7 +42,7 @@ export default function Login() {
 
   return (
     <>
-      <Navbar brand="PETRO-SIGTI" links={misEnlaces} />
+      <Navbar brand="PETRO-SIGTI" />
 
       <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
         <div
