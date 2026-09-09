@@ -15,8 +15,7 @@ export default function Recovery() {
     setLoading(true);
 
     try {
-      // Endpoint que procesará el envío de correo de restablecimiento
-      await api.post("/api/auth/recovery", { email });
+      await api.post("/users/recovery", { email });
       setSuccess(true);
       setEmail("");
     } catch (err) {
@@ -27,6 +26,10 @@ export default function Recovery() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setSuccess(false);
   };
 
   return (
@@ -46,13 +49,6 @@ export default function Recovery() {
               Ingresa tu correo institucional para enviarte las instrucciones de restablecimiento.
             </p>
           </div>
-
-          {/* Mensaje de éxito */}
-          {success && (
-            <div className="alert alert-success border-0 small py-2 px-3 mb-4 rounded-3">
-              Hemos enviado las instrucciones a tu correo. Revisa tu bandeja de entrada o spam.
-            </div>
-          )}
 
           {/* Alerta de error */}
           {error && (
@@ -95,6 +91,38 @@ export default function Recovery() {
           </form>
         </div>
       </div>
+
+      {success && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 rounded-4 shadow">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="modal-title fw-bold text-dark">Correo enviado</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Cerrar"
+                  onClick={handleSuccessModalClose}
+                ></button>
+              </div>
+              <div className="modal-body pt-2">
+                <p className="mb-0 text-secondary">
+                  Hemos enviado las instrucciones a tu correo. Revisa tu bandeja de entrada o spam.
+                </p>
+              </div>
+              <div className="modal-footer border-0 pt-2">
+                <button
+                  type="button"
+                  className="btn btn-primary px-4"
+                  onClick={handleSuccessModalClose}
+                >
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
