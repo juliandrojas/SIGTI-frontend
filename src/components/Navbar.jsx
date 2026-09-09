@@ -1,11 +1,16 @@
+import { Link } from "react-router-dom";
+import { getToken } from "../utils/auth";
+
 export default function Navbar({ brand = "Navbar", links = [] }) {
+  const brandPath = getToken() ? "/admin" : "/";
+
   return (
     <nav className="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
       <div className="container-fluid">
         {/* Título / Marca a la izquierda */}
-        <a className="navbar-brand text-white fw-bold" href="/">
+        <Link className="navbar-brand text-white fw-bold" to={brandPath}>
           {brand}
-        </a>
+        </Link>
 
         {/* Botón responsive para móviles */}
         <button
