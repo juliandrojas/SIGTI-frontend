@@ -20,6 +20,11 @@ export default function RecoveryForm() {
       return;
     }
 
+    if (!/^[a-f0-9]{64}$/i.test(token)) {
+      setError("El enlace de recuperación no es válido.");
+      return;
+    }
+
     if (newPassword.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres.");
       return;
