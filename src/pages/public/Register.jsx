@@ -11,6 +11,8 @@ export default function Register() {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -29,14 +31,20 @@ export default function Register() {
       const message = response.data.emailSent
         ? "Usuario creado con éxito. Revisa tu correo de bienvenida."
         : "Usuario creado, pero no se pudo enviar el correo de bienvenida.";
-      alert(message);
-      navigate("/login");
+
+      setSuccessMessage(message);
+      setShowSuccessModal(true);
     } catch (err) {
       const msg = err.response?.data?.message || "Ocurrió un error al registrar el usuario";
       setError(msg);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    navigate("/login");
   };
 
   return (
@@ -166,6 +174,36 @@ export default function Register() {
           </form>
         </div>
       </div>
+
+      {showSuccessModal && (
+        <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 rounded-4 shadow">
+              <div className="modal-header border-0 pb-0">
+                <h5 className="modal-title fw-bold text-dark">Registro exitoso</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Cerrar"
+                  onClick={handleSuccessModalClose}
+                ></button>
+              </div>
+              <div className="modal-body pt-2">
+                <p className="mb-0 text-secondary">{successMessage}</p>
+              </div>
+              <div className="modal-footer border-0 pt-2">
+                <button
+                  type="button"
+                  className="btn btn-primary px-4"
+                  onClick={handleSuccessModalClose}
+                >
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
