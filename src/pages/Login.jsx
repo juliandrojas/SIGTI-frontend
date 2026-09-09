@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Navbar from "../components/Navbar";
-import { saveSession } from "../utils/auth";
+import { getToken, saveSession } from "../utils/auth";
 
 export default function Login() {
   const misEnlaces = [{ text: "Volver a inicio", href: "/" }];
@@ -11,6 +11,10 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  if (getToken()) {
+    return <Navigate to="/admin" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
