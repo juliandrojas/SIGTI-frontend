@@ -13,7 +13,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   if (getToken()) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -31,7 +31,7 @@ export default function Login() {
       saveSession(response.data);
 
       // Redirigir al panel
-      navigate("/admin");
+      navigate("/");
     } catch (err) {
       // Captura el mensaje que programaste en el backend o muestra uno por defecto
       const msg = err.response?.data?.message || "Credenciales incorrectas";

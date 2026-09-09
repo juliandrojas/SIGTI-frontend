@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { getToken } from "../utils/auth";
 
-export default function Navbar({ brand = "Navbar", links = [] }) {
+export default function Navbar({ brand = "Navbar", links = [], onLogout }) {
   const brandPath = getToken() ? "/admin" : "/";
 
   return (
@@ -29,16 +29,23 @@ export default function Navbar({ brand = "Navbar", links = [] }) {
         <div className="collapse navbar-collapse" id="navbarNav">
           {/* ms-auto empuja los enlaces hacia la derecha */}
           <ul className="navbar-nav ms-auto">
-            {links.map((link, index) => (
-              <li className="nav-item" key={index}>
-                <a
-                  className={`nav-link text-white ${link.active ? 'active fw-semibold' : ''}`}
-                  href={link.href || "#"}
+            {links.map((link) => (
+              <li className="nav-item" key={link.href}>
+                <Link
+                  className={`nav-link text-white ${link.active ? "active fw-semibold" : ""}`}
+                  to={link.href || "#"}
                 >
                   {link.text}
-                </a>
+                </Link>
               </li>
             ))}
+            {onLogout && (
+              <li className="nav-item ms-lg-2">
+                <button type="button" className="btn btn-danger btn-sm mt-1 mt-lg-0" onClick={onLogout}>
+                  Cerrar sesión
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       </div>
