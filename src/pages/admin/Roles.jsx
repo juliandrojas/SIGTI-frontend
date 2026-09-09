@@ -39,7 +39,7 @@ export default function Roles() {
         <div key={rol.id} className="card mb-3 shadow-sm border-0">
           <div className="card-body d-flex justify-content-between align-items-center">
             <span className="fw-semibold text-dark">{rol.name}</span>
-            <Link to={`/roles/edit/${rol.id}`} className="btn btn-sm btn-primary px-3">
+            <Link to={`/admin/roles/edit/${rol.id}`} className="btn btn-sm btn-primary px-3">
               Editar
             </Link>
           </div>

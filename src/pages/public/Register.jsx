@@ -19,14 +19,17 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await api.post("/users/create", {
+      const response = await api.post("/users/create", {
         name,
         firstLastName,
         secondLastName,
         email,
         password,
       });
-      alert("Usuario creado con éxito")
+      const message = response.data.emailSent
+        ? "Usuario creado con éxito. Revisa tu correo de bienvenida."
+        : "Usuario creado, pero no se pudo enviar el correo de bienvenida.";
+      alert(message);
       navigate("/login");
     } catch (err) {
       const msg = err.response?.data?.message || "Ocurrió un error al registrar el usuario";
