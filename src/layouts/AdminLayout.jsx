@@ -11,7 +11,11 @@ export default function AdminLayout() {
     navigate('/login');
   };
 
-  const misEnlaces = [{ text: "Roles", href: "/admin/roles" }];
+  const misEnlaces = [
+    { text: "Dashboard", href: "/admin" },
+    { text: "Roles", href: "/admin/roles" },
+    { text: "Inventario", href: "/admin/inventory" },
+  ];
   return (
     <>
     <Navbar brand="PETRO-SIGTI" links={misEnlaces} />

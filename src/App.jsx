@@ -5,6 +5,7 @@ import PublicLayout from "./layouts/PublicLayout";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import EditRole from "./pages/admin/EditRole";
+import Inventory from "./pages/admin/Inventory";
 import Roles from "./pages/admin/Roles";
 import Home from "./pages/public/Home";
 import Recovery from "./pages/public/Recovery";
@@ -30,6 +31,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="roles" element={<Roles />} />
           <Route path="roles/edit/:id" element={<EditRole />} />
+          <Route path="inventory" element={<Inventory />} />
         </Route>
       </Route>
     </Routes>
