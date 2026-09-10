@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute";
+import RoleProtectedRoute from "./components/RoleProtectedRoute";
 import AdminLayout from "./layouts/AdminLayout";
+import SistemasLayout from "./layouts/SistemasLayout";
+import UsuarioLayout from "./layouts/UsuarioLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -16,19 +18,40 @@ import Loans from "./pages/admin/Loans";
 function App() {
   return (
     <Routes>
-      {/* Rutas públicas */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/admin" element={<Navigate to="/" replace />} />
-        <Route path="/" element={<AdminLayout />}>
+      {/* Rutas de Administrador (Rol 1) */}
+      <Route element={<RoleProtectedRoute allowedRoles={[1]} />}>
+        <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-          <Route path="admin/roles" element={<Roles />} />
-          <Route path="admin/roles/edit/:id" element={<EditRole />} />
-          <Route path="admin/inventory" element={<Inventory />} />
-          <Route path="admin/register" element={<RegisterComponent />} />
-          <Route path="admin/loans" element={<Loans />} />
+          <Route path="roles" element={<Roles />} />
+          <Route path="roles/edit/:id" element={<EditRole />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="register" element={<RegisterComponent />} />
+          <Route path="loans" element={<Loans />} />
         </Route>
       </Route>
 
+      {/* Rutas de Sistemas (Rol 2) */}
+      <Route element={<RoleProtectedRoute allowedRoles={[2]} />}>
+        <Route path="/sistemas" element={<SistemasLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="register" element={<RegisterComponent />} />
+          <Route path="loans" element={<Loans />} />
+        </Route>
+      </Route>
+
+      {/* Rutas de Usuarios Externos (Rol 3) */}
+      <Route element={<RoleProtectedRoute allowedRoles={[3]} />}>
+        <Route path="/usuario" element={<UsuarioLayout />}>
+          <Route index element={<Navigate to="loans" replace />} />
+          <Route path="loans" element={<Loans />} />
+        </Route>
+      </Route>
+
+      {/* Redirección global a login si entran a / */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* Rutas públicas */}
       <Route element={<PublicLayout />}>
         <Route path="/register" element={<Register />} />
         <Route path="/recovery" element={<Recovery />} />

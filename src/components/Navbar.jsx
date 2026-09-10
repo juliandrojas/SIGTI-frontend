@@ -1,8 +1,15 @@
 import { Link } from "react-router-dom";
-import { getToken } from "../utils/auth";
+import { getToken, getUserRole } from "../utils/auth";
 
 export default function Navbar({ brand = "Navbar", links = [], onLogout }) {
-  const brandPath = getToken() ? "/admin" : "/";
+  const userRole = getUserRole();
+  let brandPath = "/";
+  
+  if (getToken()) {
+    if (userRole === 1) brandPath = "/admin";
+    else if (userRole === 2) brandPath = "/sistemas";
+    else if (userRole === 3) brandPath = "/usuario";
+  }
 
   return (
     <nav className="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">

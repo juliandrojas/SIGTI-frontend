@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Navbar from "../components/Navbar";
-import { getToken, saveSession } from "../utils/auth";
+import { getToken, getUserRole, saveSession } from "../utils/auth";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -11,7 +11,11 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const userRole = getUserRole();
   if (getToken()) {
+    if (userRole === 1) return <Navigate to="/admin" replace />;
+    if (userRole === 2) return <Navigate to="/sistemas" replace />;
+    if (userRole === 3) return <Navigate to="/usuario" replace />;
     return <Navigate to="/" replace />;
   }
 
@@ -29,8 +33,16 @@ export default function Login() {
 
       saveSession(response.data);
 
-      // Redirigir al panel
-      navigate("/");
+      const roleId = response.data.user?.role_id ? Number(response.data.user.role_id) : null;
+      if (roleId === 1) {
+        navigate("/admin");
+      } else if (roleId === 2) {
+        navigate("/sistemas");
+      } else if (roleId === 3) {
+        navigate("/usuario");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       // Captura el mensaje que programaste en el backend o muestra uno por defecto
       const msg = err.response?.data?.message || "Credenciales incorrectas";

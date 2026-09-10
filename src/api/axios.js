@@ -2,9 +2,10 @@ import axios from 'axios';
 import { clearSession, getToken } from '../utils/auth';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL, headers: {
-        'Content-Type': 'application/json',
-    }
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : 'https://sigti-backend.vercel.app/'),
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 // Opcional: Interceptor para enviar el token JWT automáticamente si existe
 api.interceptors.request.use(
