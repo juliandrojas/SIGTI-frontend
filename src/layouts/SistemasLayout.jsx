@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { clearSession } from '../utils/auth';
 
-export default function AdminLayout() {
+export default function SistemasLayout() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,11 +12,10 @@ export default function AdminLayout() {
 
   const getLinksForRole = () => {
     return [
-      { text: "Inicio", href: "/admin/" },
-      { text: "Registrar componente", href: "/admin/register" },
-      { text: "Roles", href: "/admin/roles" },
-      { text: "Inventario", href: "/admin/inventory" },
-      { text: "Historial de Préstamos", href: "/admin/loans" },
+      { text: "Inicio", href: "/sistemas/" },
+      { text: "Registrar componente", href: "/sistemas/register" },
+      { text: "Inventario", href: "/sistemas/inventory" },
+      { text: "Historial de Préstamos", href: "/sistemas/loans" },
     ];
   };
 

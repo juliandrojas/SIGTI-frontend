@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import api from "../../api/axios";
+import { isExternalUser } from "../../utils/auth";
 
 export default function AdminDashboard() {
+  const isExternal = isExternalUser();
+
+  if (isExternal) {
+    return <Navigate to="/usuario/loans" replace />;
+  }
+
   const [items, setItems] = useState([]);
   const [loans, setLoans] = useState([]);
   const [error, setError] = useState("");
