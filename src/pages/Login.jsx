@@ -69,16 +69,14 @@ export default function Login() {
     <>
       <Navbar brand="PETRO-SIGTI" />
 
-      <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
-        <div
-          className="card shadow-sm p-4 border-0"
-          style={{ width: "100%", maxWidth: "400px" }}
-        >
+      <div className="auth-shell">
+        <div className="card auth-card border-0">
           <div className="card-body">
             {/* Encabezado */}
             <div className="text-center mb-4">
-              <h4 className="fw-bold text-primary">PETRO-SIGTI</h4>
-              <p className="text-muted small">Mesa de Ayuda y Gestión de TI</p>
+              <span className="auth-logo mb-3"><i className="bi bi-box-seam" aria-hidden="true" /></span>
+              <h4 className="fw-bold mb-1">Bienvenido a PETRO-SIGTI</h4>
+              <p className="text-muted small">Mesa de ayuda y gestión de activos TI</p>
             </div>
 
             {/* Alerta de error si falla el login */}

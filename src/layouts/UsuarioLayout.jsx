@@ -12,7 +12,7 @@ export default function UsuarioLayout() {
 
   const getLinksForRole = () => {
     return [
-      { text: "Solicitud de Préstamos", href: "/usuario/loans" },
+      { text: "Solicitud de Préstamo", href: "/usuario/loans", icon: "bi-arrow-left-right" },
     ];
   };
 

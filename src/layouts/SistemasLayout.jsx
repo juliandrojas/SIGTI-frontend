@@ -12,10 +12,11 @@ export default function SistemasLayout() {
 
   const getLinksForRole = () => {
     return [
-      { text: "Inicio", href: "/sistemas/" },
-      { text: "Registrar componente", href: "/sistemas/register" },
-      { text: "Inventario", href: "/sistemas/inventory" },
-      { text: "Historial de Préstamos", href: "/sistemas/loans" },
+      { text: "Inicio", href: "/sistemas", icon: "bi-house" },
+      { text: "Registrar componente", href: "/sistemas/register", icon: "bi-plus-square" },
+      { text: "Inventario", href: "/sistemas/inventory", icon: "bi-boxes" },
+      { text: "Préstamos", href: "/sistemas/loans", icon: "bi-arrow-left-right" },
+      { text: "Roles", href: "/sistemas/roles", icon: "bi-shield-check" },
     ];
   };
 

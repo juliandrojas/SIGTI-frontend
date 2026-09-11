@@ -52,16 +52,22 @@ export default function Loans() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setError("");
-
-    const promises = [];
-    if (showForm) promises.push(loadItems());
-    if (showHistory) promises.push(loadLoans());
-
-    Promise.all(promises).finally(() => {
-      if (active) setLoading(false);
-    });
+    const loadData = async () => {
+      try {
+        const [itemsResponse, loansResponse] = await Promise.all([
+          showForm ? api.get("/inventory/items") : Promise.resolve(null),
+          showHistory ? api.get("/inventory/loans") : Promise.resolve(null),
+        ]);
+        if (!active) return;
+        if (itemsResponse) setItems(itemsResponse.data);
+        if (loansResponse) setLoans(loansResponse.data);
+      } catch (err) {
+        if (active) setError(err?.response?.data?.message || "No se pudieron cargar los datos del módulo.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    loadData();
 
     return () => {
       active = false;

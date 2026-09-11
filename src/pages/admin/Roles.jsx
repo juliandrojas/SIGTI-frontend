@@ -95,7 +95,7 @@ export default function Roles() {
                       <small className="text-secondary">ID de rol: {role.id}</small>
                     </div>
                     <Link
-                      to={`/admin/roles/edit/${role.id}`}
+                      to={`/sistemas/roles/edit/${role.id}`}
                       className="btn btn-outline-primary btn-sm d-flex align-items-center gap-2"
                     >
                       <i className="bi bi-pencil" aria-hidden="true"></i>
