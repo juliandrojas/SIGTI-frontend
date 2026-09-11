@@ -11,48 +11,54 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const userRole = getUserRole();
-  if (getToken()) {
-    if (userRole === 1) return <Navigate to="/admin" replace />;
-    if (userRole === 2) return <Navigate to="/sistemas" replace />;
-    if (userRole === 3) return <Navigate to="/usuario" replace />;
-    // Si tiene token pero no un rol válido, no redirigir a "/" para evitar loop infinito
-    // Se renderizará el formulario de login.
+  // 1. Redirección si ya existe sesión activa (Adaptada a los 2 roles)
+  const token = getToken();
+  const rawRole = getUserRole();
+  const userRole = !isNaN(Number(rawRole)) ? Number(rawRole) : rawRole;
+
+  if (token && userRole) {
+    if (userRole === 1 || userRole === "sistemas") {
+      return <Navigate to="/sistemas" replace />;
+    }
+    if (userRole === 2 || userRole === "usuario") {
+      return <Navigate to="/usuario" replace />;
+    }
   }
 
+  // 2. Procesar Login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      // Petición POST enviando usuario y clave al backend
       const response = await api.post("/users/login", {
         username,
         password,
       });
 
-      const roleId = response.data.user?.role_id ? Number(response.data.user.role_id) : null;
-      
-      if (![1, 2, 3].includes(roleId)) {
-        setError("Usuario sin rol asignado o rol no válido");
+      const rawRoleId = response.data.user?.role_id ?? response.data.user?.role;
+      const roleId = !isNaN(Number(rawRoleId)) ? Number(rawRoleId) : rawRoleId;
+
+      // Validar que el rol sea 1 (sistemas) o 2 (usuario)
+      if (roleId !== 1 && roleId !== 2 && roleId !== "sistemas" && roleId !== "usuario") {
+        setError("Usuario sin rol válido en el sistema.");
         setLoading(false);
         return;
       }
 
+      // Guardar datos en localStorage
       saveSession(response.data);
 
-      if (roleId === 1) {
-        navigate("/admin");
-      } else if (roleId === 2) {
-        navigate("/sistemas");
-      } else if (roleId === 3) {
-        navigate("/usuario");
+      // Redirigir según el rol del sistema SIGTI
+      if (roleId === 1 || roleId === "sistemas") {
+        navigate("/sistemas", { replace: true });
+      } else {
+        navigate("/usuario", { replace: true });
       }
 
     } catch (err) {
-      // Captura el mensaje que programaste en el backend o muestra uno por defecto
-      const msg = err.response?.data?.message || "Credenciales incorrectas";
+      const msg = err.response?.data?.message || "Credenciales incorrectas o error de conexión.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -114,6 +120,7 @@ export default function Login() {
                   {loading ? "Ingresando..." : "Iniciar Sesión"}
                 </button>
               </div>
+
               <div className="mt-4 d-flex align-items-center gap-2">
                 <p className="mb-0 text-muted">¿No tienes una cuenta?</p>
                 <a
@@ -123,7 +130,8 @@ export default function Login() {
                   Crea una ahora
                 </a>
               </div>
-              <div className="mt-4 d-flex align-items-center gap-2">
+
+              <div className="mt-2 d-flex align-items-center gap-2">
                 <p className="mb-0 text-muted">¿No recuerdas tu contraseña?</p>
                 <a
                   href="/recovery"

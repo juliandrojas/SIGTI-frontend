@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import RoleProtectedRoute from "./components/RoleProtectedRoute";
-import AdminLayout from "./layouts/AdminLayout";
 import SistemasLayout from "./layouts/SistemasLayout";
 import UsuarioLayout from "./layouts/UsuarioLayout";
 import PublicLayout from "./layouts/PublicLayout";
@@ -18,40 +17,27 @@ import Loans from "./pages/admin/Loans";
 function App() {
   return (
     <Routes>
-      {/* Rutas de Administrador (Rol 1) */}
+      {/* ─── 1. Rutas de SISTEMAS (Rol 1 - Administrador técnico) ─── */}
       <Route element={<RoleProtectedRoute allowedRoles={[1]} />}>
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="roles" element={<Roles />} />
-          <Route path="roles/edit/:id" element={<EditRole />} />
-          <Route path="inventory" element={<Inventory />} />
-          <Route path="register" element={<RegisterComponent />} />
-          <Route path="loans" element={<Loans />} />
-        </Route>
-      </Route>
-
-      {/* Rutas de Sistemas (Rol 2) */}
-      <Route element={<RoleProtectedRoute allowedRoles={[2]} />}>
         <Route path="/sistemas" element={<SistemasLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="inventory" element={<Inventory />} />
-          <Route path="register" element={<RegisterComponent />} />
           <Route path="loans" element={<Loans />} />
+          <Route path="register" element={<RegisterComponent />} />
+          <Route path="roles" element={<Roles />} />
+          <Route path="roles/edit/:id" element={<EditRole />} />
         </Route>
       </Route>
 
-      {/* Rutas de Usuarios Externos (Rol 3) */}
-      <Route element={<RoleProtectedRoute allowedRoles={[3]} />}>
+      {/* ─── 2. Rutas de USUARIO (Rol 2 - Colaboradores generales) ─── */}
+      <Route element={<RoleProtectedRoute allowedRoles={[2]} />}>
         <Route path="/usuario" element={<UsuarioLayout />}>
           <Route index element={<Navigate to="loans" replace />} />
           <Route path="loans" element={<Loans />} />
         </Route>
       </Route>
 
-      {/* Redirección global a login si entran a / */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
-
-      {/* Rutas públicas */}
+      {/* ─── 3. Rutas públicas ─── */}
       <Route element={<PublicLayout />}>
         <Route path="/register" element={<Register />} />
         <Route path="/recovery" element={<Recovery />} />
@@ -60,6 +46,8 @@ function App() {
 
       <Route path="/login" element={<Login />} />
 
+      {/* Redirección por defecto a login si no coincide ninguna ruta */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
