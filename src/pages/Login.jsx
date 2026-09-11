@@ -16,7 +16,8 @@ export default function Login() {
     if (userRole === 1) return <Navigate to="/admin" replace />;
     if (userRole === 2) return <Navigate to="/sistemas" replace />;
     if (userRole === 3) return <Navigate to="/usuario" replace />;
-    return <Navigate to="/" replace />;
+    // Si tiene token pero no un rol válido, no redirigir a "/" para evitar loop infinito
+    // Se renderizará el formulario de login.
   }
 
   const handleSubmit = async (e) => {
@@ -31,18 +32,24 @@ export default function Login() {
         password,
       });
 
+      const roleId = response.data.user?.role_id ? Number(response.data.user.role_id) : null;
+      
+      if (![1, 2, 3].includes(roleId)) {
+        setError("Usuario sin rol asignado o rol no válido");
+        setLoading(false);
+        return;
+      }
+
       saveSession(response.data);
 
-      const roleId = response.data.user?.role_id ? Number(response.data.user.role_id) : null;
       if (roleId === 1) {
         navigate("/admin");
       } else if (roleId === 2) {
         navigate("/sistemas");
       } else if (roleId === 3) {
         navigate("/usuario");
-      } else {
-        navigate("/");
       }
+
     } catch (err) {
       // Captura el mensaje que programaste en el backend o muestra uno por defecto
       const msg = err.response?.data?.message || "Credenciales incorrectas";
