@@ -6,8 +6,8 @@ export default function Navbar({ brand = "Navbar", links = [], onLogout }) {
   let brandPath = "/";
   
   if (getToken()) {
-    if (userRole === 1 || userRole === 2) brandPath = "/sistemas";
-    else if (userRole === 3) brandPath = "/usuario";
+    if (userRole === 1) brandPath = "/sistemas";
+    else if (userRole === 2 || userRole === 3) brandPath = "/usuario";
   }
 
   return (
@@ -39,7 +39,11 @@ export default function Navbar({ brand = "Navbar", links = [], onLogout }) {
             {links.map((link) => (
               <li className="nav-item" key={link.href}>
                 <NavLink
-                  className={({ isActive }) => `nav-link ${isActive || link.active ? "active fw-semibold" : ""}`}
+                  className={({ isActive }) =>
+                    link.button
+                      ? `btn btn-primary btn-sm mt-2 mt-lg-0 ${isActive || link.active ? "active" : ""}`
+                      : `nav-link ${isActive || link.active ? "active fw-semibold" : ""}`
+                  }
                   to={link.href || "#"}
                 >
                   <i className={`bi ${link.icon || "bi-grid-1x2"} me-2`} aria-hidden="true" />{link.text}

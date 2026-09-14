@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import { employeeAreas } from "../../data/employeeAreas";
 import { canViewLoanForm, canViewLoanHistory, getStoredUser } from "../../utils/auth";
 
 const initialForm = {
@@ -11,6 +12,24 @@ const initialForm = {
   notes: "",
 };
 
+const normalizeName = (name = "") =>
+  name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+
+const getCurrentUserDetails = (user) => {
+  const fullName = user?.name
+    ? user.lastname
+      ? `${user.name} ${user.lastname}`
+      : user.name
+    : "";
+
+  return { fullName, area: employeeAreas[normalizeName(fullName)] || "" };
+};
+
 export default function Loans() {
   const currentUser = getStoredUser();
   const showForm = canViewLoanForm();
@@ -19,18 +38,16 @@ export default function Loans() {
   const [items, setItems] = useState([]);
   const [loans, setLoans] = useState([]);
   const [form, setForm] = useState(() => {
-    const fullName = currentUser?.name
-      ? currentUser.lastname
-        ? `${currentUser.name} ${currentUser.lastname}`
-        : currentUser.name
-      : "";
-    const defaultPosition = currentUser?.role_name || "Usuario Externo";
-    return { ...initialForm, requested_by: fullName, position: defaultPosition };
+    const { fullName, area } = getCurrentUserDetails(currentUser);
+    return { ...initialForm, requested_by: fullName, position: area };
   });
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const selectedItem = items.find((item) => String(item.id) === String(form.item_id));
+  const availableQuantity = Number(selectedItem?.available_quantity ?? 0);
+  const exceedsAvailable = Boolean(selectedItem) && Number(form.quantity) > availableQuantity;
 
   const loadItems = async () => {
     try {
@@ -95,14 +112,8 @@ export default function Loans() {
         quantity: Number(form.quantity),
       });
 
-      const fullName = currentUser?.name
-        ? currentUser.lastname
-          ? `${currentUser.name} ${currentUser.lastname}`
-          : currentUser.name
-        : "";
-
-      const defaultPosition = currentUser?.role_name || "Usuario Externo";
-      setForm({ ...initialForm, requested_by: fullName, position: defaultPosition });
+      const { fullName, area } = getCurrentUserDetails(currentUser);
+      setForm({ ...initialForm, requested_by: fullName, position: area });
       setMessage("Solicitud de préstamo registrada correctamente.");
       await loadItems();
     } catch (err) {
@@ -194,8 +205,8 @@ export default function Loans() {
                       className="form-control"
                       name="requested_by"
                       value={form.requested_by}
-                      onChange={handleChange}
                       placeholder="Nombre del solicitante"
+                      readOnly
                       required
                     />
                   </div>
@@ -205,64 +216,34 @@ export default function Loans() {
                     <input
                       type="number"
                       min="1"
-                      className="form-control"
+                      className={`form-control ${exceedsAvailable ? "is-invalid" : ""}`}
                       name="quantity"
                       value={form.quantity}
                       onChange={handleChange}
                       required
                     />
+                    {exceedsAvailable && (
+                      <div className="invalid-feedback d-block" role="alert" aria-live="polite">
+                        La cantidad solicitada supera las {availableQuantity} unidades disponibles.
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-6">
-                    <div className="form-floating">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="position"
-                        name="position"
-                        value={form.position}
-                        onChange={handleChange}
-                        placeholder="Cargo / Área / Posición"
-                        list="google-positions-list"
-                        autoComplete="off"
-                        required
-                      />
-                      <label htmlFor="position">
-                        <i className="bi bi-briefcase-fill text-primary me-1"></i> Cargo / Área / Posición
-                      </label>
-                      <datalist id="google-positions-list">
-                        <option value="Usuario Externo" />
-                        <option value="Consultoría Externa" />
-                        <option value="Área de Sistemas / TI" />
-                        <option value="Operaciones / Planta" />
-                        <option value="Administración General" />
-                        <option value="Contabilidad y Finanzas" />
-                        <option value="Recursos Humanos" />
-                        <option value="Comercial y Ventas" />
-                        <option value="Auditoría / Control Interno" />
-                        <option value="Mantenimiento y Soporte" />
-                        <option value="Gerencia / Dirección" />
-                      </datalist>
-                    </div>
-                    {/* Sugerencias rápidas con clases nativas de Bootstrap */}
-                    <div className="d-flex flex-wrap gap-1 mt-2 align-items-center">
-                      <span className="text-muted small me-1" style={{ fontSize: "0.75rem" }}>
-                        <i className="bi bi-lightning-charge-fill text-warning me-1"></i>Sugerencias:
-                      </span>
-                      {["Usuario Externo", "Consultoría Externa", "Área Sistemas", "Operaciones", "Administración"].map((chip) => (
-                        <button
-                          key={chip}
-                          type="button"
-                          className={`btn btn-sm rounded-pill py-0 px-2 ${
-                            form.position === chip ? "btn-primary" : "btn-outline-secondary"
-                          }`}
-                          style={{ fontSize: "0.75rem" }}
-                          onClick={() => setForm((c) => ({ ...c, position: chip }))}
-                        >
-                          {chip}
-                        </button>
-                      ))}
-                    </div>
+                    <label htmlFor="position" className="form-label fw-medium">Área</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="position"
+                      name="position"
+                      value={form.position}
+                      placeholder="Área del solicitante"
+                      readOnly
+                      required
+                    />
+                    {!form.position && (
+                      <div className="form-text text-danger">No se encontró un área para este solicitante en el informe de empleados.</div>
+                    )}
                   </div>
 
                   <div className="col-12">
@@ -289,7 +270,7 @@ export default function Loans() {
                   </div>
 
                   <div className="col-12 mt-4">
-                    <button type="submit" className="btn btn-primary w-100 py-2 fw-semibold">
+                    <button type="submit" className="btn btn-primary w-100 py-2 fw-semibold" disabled={exceedsAvailable}>
                       Guardar préstamo
                     </button>
                   </div>
