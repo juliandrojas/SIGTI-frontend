@@ -6,6 +6,7 @@ import PublicLayout from "./layouts/PublicLayout";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Inventory from "./pages/admin/Inventory";
+import Maintenance from "./pages/systems/Maintenance";
 import Recovery from "./pages/public/Recovery";
 import RecoveryForm from "./pages/public/RecoveryForm";
 import Register from "./pages/public/Register";
@@ -22,6 +23,7 @@ function App() {
           <Route path="inventory" element={<Inventory />} />
           <Route path="loans" element={<Loans />} />
           <Route path="register" element={<RegisterComponent />} />
+          <Route path="maintenance" element={<Maintenance />} />
         </Route>
       </Route>
 
