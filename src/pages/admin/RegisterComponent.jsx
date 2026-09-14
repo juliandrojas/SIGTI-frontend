@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import api from "../../api/axios";
 import { employeeAreas } from "../../data/employeeAreas";
+import { computerBrands, computerModels, computerSerials } from "../../data/computerCatalog";
 
 const normalize = (value = "") => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, " ");
 const users = Object.keys(employeeAreas).map((name) => name.replace(/\b\w/g, (letter) => letter.toUpperCase()));
@@ -16,9 +17,9 @@ export default function RegisterComponent({ embedded = false, onSaved, existingI
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const brands = useMemo(() => [...new Set(existingItems.map((item) => item.brand).filter(Boolean))].sort(), [existingItems]);
-  const models = useMemo(() => [...new Set(existingItems.map((item) => item.model).filter(Boolean))].sort(), [existingItems]);
-  const serials = useMemo(() => [...new Set(existingItems.map((item) => item.serial_number).filter(Boolean))].sort(), [existingItems]);
+  const brands = useMemo(() => [...new Set([...computerBrands, ...existingItems.map((item) => item.brand).filter(Boolean)])].sort(), [existingItems]);
+  const models = useMemo(() => [...new Set([...computerModels, ...existingItems.map((item) => item.model).filter(Boolean)])].sort(), [existingItems]);
+  const serials = useMemo(() => [...new Set([...computerSerials, ...existingItems.map((item) => item.serial_number).filter(Boolean)])].sort(), [existingItems]);
   const handleUser = (eventOrUpdater) => {
     if (typeof eventOrUpdater === "function") {
       setForm((current) => { const next = eventOrUpdater(current); return { ...next, area: employeeAreas[normalize(next.assigned_user)] || "" }; });
