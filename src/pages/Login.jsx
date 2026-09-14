@@ -119,25 +119,6 @@ export default function Login() {
                 </button>
               </div>
 
-              <div className="mt-4 d-flex align-items-center gap-2">
-                <p className="mb-0 text-muted">¿No tienes una cuenta?</p>
-                <a
-                  href="/register"
-                  className="text-decoration-none fw-semibold"
-                >
-                  Crea una ahora
-                </a>
-              </div>
-
-              <div className="mt-2 d-flex align-items-center gap-2">
-                <p className="mb-0 text-muted">¿No recuerdas tu contraseña?</p>
-                <a
-                  href="/recovery"
-                  className="text-decoration-none fw-semibold"
-                >
-                  Restablecer
-                </a>
-              </div>
             </form>
           </div>
         </div>

@@ -16,7 +16,6 @@ export default function SistemasLayout() {
       { text: "Registrar componente", href: "/sistemas/register", icon: "bi-plus-square" },
       { text: "Inventario", href: "/sistemas/inventory", icon: "bi-boxes" },
       { text: "Préstamos", href: "/sistemas/loans", icon: "bi-arrow-left-right" },
-      { text: "Roles", href: "/sistemas/roles", icon: "bi-shield-check" },
     ];
   };
 

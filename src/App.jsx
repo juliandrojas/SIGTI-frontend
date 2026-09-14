@@ -5,9 +5,7 @@ import UsuarioLayout from "./layouts/UsuarioLayout";
 import PublicLayout from "./layouts/PublicLayout";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import EditRole from "./pages/admin/EditRole";
 import Inventory from "./pages/admin/Inventory";
-import Roles from "./pages/admin/Roles";
 import Recovery from "./pages/public/Recovery";
 import RecoveryForm from "./pages/public/RecoveryForm";
 import Register from "./pages/public/Register";
@@ -24,8 +22,6 @@ function App() {
           <Route path="inventory" element={<Inventory />} />
           <Route path="loans" element={<Loans />} />
           <Route path="register" element={<RegisterComponent />} />
-          <Route path="roles" element={<Roles />} />
-          <Route path="roles/edit/:id" element={<EditRole />} />
         </Route>
       </Route>
 

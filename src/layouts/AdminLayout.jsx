@@ -14,7 +14,6 @@ export default function AdminLayout() {
     return [
       { text: "Inicio", href: "/admin/" },
       { text: "Registrar componente", href: "/admin/register" },
-      { text: "Roles", href: "/admin/roles" },
       { text: "Inventario", href: "/admin/inventory" },
       { text: "Historial de Préstamos", href: "/admin/loans" },
     ];
