@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
 import api from "../../api/axios";
-import { isExternalUser } from "../../utils/auth";
 
 export default function AdminDashboard() {
-  const isExternal = isExternalUser();
   const [items, setItems] = useState([]);
   const [loans, setLoans] = useState([]);
   const [error, setError] = useState("");
@@ -19,10 +16,6 @@ export default function AdminDashboard() {
         setError(err?.response?.data?.message || "No se pudieron cargar las estadísticas.");
       });
   }, []);
-
-  if (isExternal) {
-    return <Navigate to="/usuario/loans" replace />;
-  }
 
   const totalAvailable = items.reduce((sum, item) => sum + Number(item.available_quantity || 0), 0);
   const activeLoans = loans.filter((loan) => loan.status === "active").length;

@@ -12,6 +12,7 @@ import RecoveryForm from "./pages/public/RecoveryForm";
 import Register from "./pages/public/Register";
 import RegisterComponent from "./pages/admin/RegisterComponent";
 import Loans from "./pages/admin/Loans";
+import Requests from "./pages/Requests";
 
 function App() {
   return (
@@ -24,14 +25,16 @@ function App() {
           <Route path="loans" element={<Loans />} />
           <Route path="register" element={<RegisterComponent />} />
           <Route path="maintenance" element={<Maintenance />} />
+          <Route path="requests" element={<Requests />} />
         </Route>
       </Route>
 
       {/* ─── 2. Rutas de USUARIO (Rol 2 - Colaboradores generales) ─── */}
       <Route element={<RoleProtectedRoute allowedRoles={[2]} />}>
         <Route path="/usuario" element={<UsuarioLayout />}>
-          <Route index element={<Navigate to="loans" replace />} />
-          <Route path="loans" element={<Loans />} />
+          <Route index element={<Navigate to="requests" replace />} />
+          <Route path="requests" element={<Requests />} />
+          <Route path="loans" element={<Navigate to="requests" replace />} />
         </Route>
       </Route>
 
