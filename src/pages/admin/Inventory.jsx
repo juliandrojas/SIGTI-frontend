@@ -52,7 +52,7 @@ export default function Inventory() {
   const resetForm = () => { setForm(emptyForm); setEditingId(null); setShowForm(false); };
 
   const editItem = (item) => {
-    setForm({ ...emptyForm, ...item, quantity: Number(item.quantity || 0), available_quantity: Number(item.available_quantity || 0) });
+    setForm({ ...emptyForm, name: item.name || "", category: "component", brand: item.brand || "", reference: item.reference || "", model: item.model || "", serial_number: item.serial_number || "", quantity: Number(item.quantity || 0), available_quantity: Number(item.available_quantity || 0), condition: item.condition || "good", location: item.location || "bodega", status: item.status || "available", notes: item.notes || "" });
     setEditingId(item.id);
     setShowForm(true);
     setError("");
