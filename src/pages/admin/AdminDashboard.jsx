@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import { filterPeripheralItems } from "../../utils/inventory";
 
 export default function AdminDashboard() {
   const [items, setItems] = useState([]);
@@ -9,7 +10,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     Promise.all([api.get("/inventory/items"), api.get("/inventory/loans")])
       .then(([itemsResponse, loansResponse]) => {
-        setItems(itemsResponse.data);
+        setItems(filterPeripheralItems(itemsResponse.data));
         setLoans(loansResponse.data);
       })
       .catch((err) => {

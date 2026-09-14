@@ -9,6 +9,7 @@ import {
   todayIso,
 } from "../../utils/maintenance";
 import RegisterComponent from "../admin/RegisterComponent";
+import { filterComputerItems } from "../../utils/inventory";
 
 const newForm = () => ({ item_id: "", performed_at: formatDateDisplay(todayIso()), notes: "" });
 
@@ -27,7 +28,7 @@ export default function Maintenance() {
       api.get("/inventory/items"),
       api.get("/inventory/maintenance"),
     ]);
-    if (itemsResponse.status === "fulfilled") setItems(itemsResponse.value.data);
+    if (itemsResponse.status === "fulfilled") setItems(filterComputerItems(itemsResponse.value.data));
     if (recordsResponse.status === "fulfilled") setRecords(recordsResponse.value.data);
     if (recordsResponse.status === "rejected") {
       setError(recordsResponse.reason?.response?.status === 404
@@ -44,7 +45,7 @@ export default function Maintenance() {
         api.get("/inventory/maintenance"),
       ]);
       if (!active) return;
-      if (itemsResponse.status === "fulfilled") setItems(itemsResponse.value.data);
+      if (itemsResponse.status === "fulfilled") setItems(filterComputerItems(itemsResponse.value.data));
       if (recordsResponse.status === "fulfilled") setRecords(recordsResponse.value.data);
       if (recordsResponse.status === "rejected") {
         setError(recordsResponse.reason?.response?.status === 404

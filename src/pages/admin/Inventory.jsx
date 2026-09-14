@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import { filterPeripheralItems } from "../../utils/inventory";
 
 export default function Inventory() {
   const [items, setItems] = useState([]);
@@ -10,7 +11,7 @@ export default function Inventory() {
 
   useEffect(() => {
     api.get("/inventory/items")
-      .then((response) => setItems(response.data))
+      .then((response) => setItems(filterPeripheralItems(response.data)))
       .catch((err) => setError(err?.response?.data?.message || "No se pudieron cargar los artículos."))
       .finally(() => setLoading(false));
   }, []);
