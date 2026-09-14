@@ -30,8 +30,12 @@ export default function RegisterComponent({ embedded = false, onSaved, existingI
     setForm((current) => ({ ...current, assigned_user, area: employeeAreas[normalize(assigned_user)] || "" }));
   };
   const handleSubmit = async (event) => {
-    event.preventDefault(); setError(""); setMessage(""); setSubmitting(true);
-    try { await api.post("/inventory/items", { ...form, category: "computer" }); setForm(initialForm); setMessage("Computador registrado correctamente."); onSaved?.(); }
+    event.preventDefault(); setError(""); setMessage("");
+    const requiredLabels = [["asset_code", "código de equipo"], ["ip_address", "IP"], ["area", "área"], ["assigned_user", "usuario"], ["brand", "marca"], ["model", "modelo"], ["serial_number", "serial"], ["processor", "procesador"]];
+    const missing = requiredLabels.filter(([field]) => !String(form[field] || "").trim()).map(([, label]) => label);
+    if (missing.length || (!form.hdd && !form.ssd)) { setError(`Completa los campos obligatorios: ${[...missing, !form.hdd && !form.ssd ? "HDD o SSD" : ""].filter(Boolean).join(", ")}.`); return; }
+    setSubmitting(true);
+    try { await api.post("/inventory/items", { ...form, category: "computer", name: `${form.brand.trim()} ${form.model.trim()}`.trim() }); setForm(initialForm); setMessage("Computador registrado correctamente."); onSaved?.(); }
     catch (err) { setError(err?.response?.data?.message || "No se pudo registrar el computador."); }
     finally { setSubmitting(false); }
   };

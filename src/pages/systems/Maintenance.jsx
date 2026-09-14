@@ -18,7 +18,7 @@ export default function Maintenance() {
       const [itemsResponse, recordsResponse] = await Promise.allSettled([api.get("/inventory/items"), api.get("/inventory/maintenance")]);
       if (itemsResponse.status === "fulfilled") setItems(itemsResponse.value.data);
       if (recordsResponse.status === "fulfilled") setRecords(recordsResponse.value.data);
-      if (recordsResponse.status === "rejected") setError(recordsResponse.reason?.response?.data?.message || "No se pudo cargar el historial de mantenimiento.");
+      if (recordsResponse.status === "rejected") setError(recordsResponse.reason?.response?.status === 404 ? "El historial de mantenimiento requiere aplicar la migración del sistema." : recordsResponse.reason?.response?.data?.message || "No se pudo cargar el historial de mantenimiento.");
     } catch (err) { setError(err?.response?.data?.message || "No se pudo cargar mantenimiento."); }
   };
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function Maintenance() {
         const [itemsResponse, recordsResponse] = await Promise.allSettled([api.get("/inventory/items"), api.get("/inventory/maintenance")]);
         if (active && itemsResponse.status === "fulfilled") setItems(itemsResponse.value.data);
         if (active && recordsResponse.status === "fulfilled") setRecords(recordsResponse.value.data);
-        if (active && recordsResponse.status === "rejected") setError(recordsResponse.reason?.response?.data?.message || "No se pudo cargar el historial de mantenimiento.");
+        if (active && recordsResponse.status === "rejected") setError(recordsResponse.reason?.response?.status === 404 ? "El historial de mantenimiento requiere aplicar la migración del sistema." : recordsResponse.reason?.response?.data?.message || "No se pudo cargar el historial de mantenimiento.");
       } catch (err) { if (active) setError(err?.response?.data?.message || "No se pudo cargar mantenimiento."); }
     };
     loadInitial();
