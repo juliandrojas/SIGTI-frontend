@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import { employeeAreas } from "../../data/employeeAreas";
 import { canViewLoanForm, canViewLoanHistory, getStoredUser } from "../../utils/auth";
+import { filterPeripheralItems } from "../../utils/inventory";
 
 const initialForm = {
   item_id: "",
@@ -52,7 +53,7 @@ export default function Loans() {
   const loadItems = async () => {
     try {
       const response = await api.get("/inventory/items");
-      setItems(response.data);
+      setItems(filterPeripheralItems(response.data));
     } catch (err) {
       setError(err?.response?.data?.message || "No se pudieron cargar los artículos disponibles.");
     }
@@ -76,7 +77,7 @@ export default function Loans() {
           showHistory ? api.get("/inventory/loans") : Promise.resolve(null),
         ]);
         if (!active) return;
-        if (itemsResponse) setItems(itemsResponse.data);
+        if (itemsResponse) setItems(filterPeripheralItems(itemsResponse.data));
         if (loansResponse) setLoans(loansResponse.data);
       } catch (err) {
         if (active) setError(err?.response?.data?.message || "No se pudieron cargar los datos del módulo.");
