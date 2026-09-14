@@ -1,57 +1,37 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import api from "../../api/axios";
+import { employeeAreas } from "../../data/employeeAreas";
 
-const initialForm = {
-  name: "", category: "component", brand: "", reference: "", model: "", serial_number: "",
-  quantity: "1", available_quantity: "1", condition: "good", location: "bodega", status: "available", notes: "",
-};
+const normalize = (value = "") => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, " ");
+const users = Object.keys(employeeAreas).map((name) => name.replace(/\b\w/g, (letter) => letter.toUpperCase()));
+const areas = [...new Set(Object.values(employeeAreas))].sort();
+const sizes = ["12 pulgadas", "13 pulgadas", "14 pulgadas", "15.6 pulgadas", "17 pulgadas", "19 pulgadas", "21.5 pulgadas", "23.8 pulgadas", "24 pulgadas"];
+const storageOptions = ["", "128 GB", "250 GB", "500 GB", "1 TB", "2 TB"];
+const initialForm = { asset_code: "", ip_address: "", area: "", assigned_user: "", brand: "", model: "", serial_number: "", equipment_type: "Portátil", processor: "", ram: "8 GB", operating_system: "Windows 11", hdd: "", ssd: "", nvme: false, screen_size: "14 pulgadas", antivirus: "Sophos", notes: "" };
 
-export default function RegisterComponent({ embedded = false, onSaved }) {
+const Input = ({ name, label, form, setForm, list, required = false, onChange }) => <div className="col-md-6"><label className="form-label" htmlFor={`computer-${name}`}>{label}</label><input id={`computer-${name}`} className="form-control" name={name} value={form[name]} list={list ? `list-${name}` : undefined} required={required} onChange={onChange || ((event) => setForm((current) => ({ ...current, [name]: event.target.value })))} />{list && <datalist id={`list-${name}`}>{list.map((option) => <option key={option} value={option} />)}</datalist>}</div>;
+
+export default function RegisterComponent({ embedded = false, onSaved, existingItems = [] }) {
   const [form, setForm] = useState(initialForm);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-
-  const handleChange = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setMessage("");
-    setError("");
-    try {
-      await api.post("/inventory/items", { ...form, quantity: Number(form.quantity), available_quantity: Number(form.available_quantity) });
-      setForm(initialForm);
-      setMessage("Componente registrado correctamente.");
-      onSaved?.();
-    } catch (err) {
-      setError(err?.response?.data?.message || "No se pudo registrar el componente.");
+  const [submitting, setSubmitting] = useState(false);
+  const brands = useMemo(() => [...new Set(existingItems.map((item) => item.brand).filter(Boolean))].sort(), [existingItems]);
+  const models = useMemo(() => [...new Set(existingItems.map((item) => item.model).filter(Boolean))].sort(), [existingItems]);
+  const serials = useMemo(() => [...new Set(existingItems.map((item) => item.serial_number).filter(Boolean))].sort(), [existingItems]);
+  const handleUser = (eventOrUpdater) => {
+    if (typeof eventOrUpdater === "function") {
+      setForm((current) => { const next = eventOrUpdater(current); return { ...next, area: employeeAreas[normalize(next.assigned_user)] || "" }; });
+      return;
     }
+    const assigned_user = eventOrUpdater.target.value;
+    setForm((current) => ({ ...current, assigned_user, area: employeeAreas[normalize(assigned_user)] || "" }));
   };
-
-  return (
-    <div className={embedded ? "" : "container py-4"}>
-      {!embedded && <><p className="text-uppercase text-primary small fw-semibold mb-1">Gestión de activos</p><h1 className="h3 fw-bold mb-4">Registrar componente</h1></>}
-      <div className="card shadow-sm border-0">
-        <div className="card-body">
-          {message && <div className="alert alert-success">{message}</div>}
-          {error && <div className="alert alert-danger">{error}</div>}
-          <form onSubmit={handleSubmit} className="row g-3">
-            {[
-              ["name", "Nombre", "col-12"], ["category", "Categoría", "col-md-6"], ["brand", "Marca", "col-md-6"],
-              ["reference", "Referencia", "col-md-6"], ["model", "Modelo", "col-md-6"], ["serial_number", "Serial", "col-md-6"],
-              ["quantity", "Cantidad total", "col-md-6"], ["available_quantity", "Disponible", "col-md-6"],
-              ["location", "Ubicación", "col-md-6"],
-            ].map(([name, label, column]) => (
-              <div className={column} key={name}>
-                <label className="form-label" htmlFor={`component-${name}`}>{label}</label>
-                <input id={`component-${name}`} type={["quantity", "available_quantity"].includes(name) ? "number" : "text"} min={["quantity", "available_quantity"].includes(name) ? "0" : undefined} className="form-control" name={name} value={form[name]} onChange={handleChange} required={name === "name"} />
-              </div>
-            ))}
-            <div className="col-md-6"><label className="form-label" htmlFor="component-condition">Condición</label><select id="component-condition" className="form-select" name="condition" value={form.condition} onChange={handleChange}><option value="good">Bueno</option><option value="warning">Advertencia</option><option value="damaged">Dañado</option></select></div>
-            <div className="col-md-6"><label className="form-label" htmlFor="component-status">Estado</label><select id="component-status" className="form-select" name="status" value={form.status} onChange={handleChange}><option value="available">Disponible</option><option value="loaned">Prestado</option><option value="maintenance">Mantenimiento</option></select></div>
-            <div className="col-12"><label className="form-label" htmlFor="component-notes">Notas</label><textarea id="component-notes" className="form-control" rows="3" name="notes" value={form.notes} onChange={handleChange} /></div>
-            <div className="col-12"><button type="submit" className="btn btn-primary">Guardar componente</button></div>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+  const handleSubmit = async (event) => {
+    event.preventDefault(); setError(""); setMessage(""); setSubmitting(true);
+    try { await api.post("/inventory/items", { ...form, category: "computer" }); setForm(initialForm); setMessage("Computador registrado correctamente."); onSaved?.(); }
+    catch (err) { setError(err?.response?.data?.message || "No se pudo registrar el computador."); }
+    finally { setSubmitting(false); }
+  };
+  return <div className={embedded ? "" : "container py-4"}>{!embedded && <><p className="text-uppercase text-primary small fw-semibold mb-1">Gestión de activos</p><h1 className="h3 fw-bold mb-4">Registrar computador</h1></>}<div className={embedded ? "" : "card shadow-sm border-0"}><div className={embedded ? "" : "card-body"}>{message && <div className="alert alert-success">{message}</div>}{error && <div className="alert alert-danger">{error}</div>}<form onSubmit={handleSubmit} className="row g-3"><Input name="asset_code" label="Código de equipo" form={form} setForm={setForm} required /><Input name="ip_address" label="IP" form={form} setForm={setForm} required /><div className="col-md-6"><label className="form-label" htmlFor="computer-area">Área</label><select id="computer-area" className="form-select" value={form.area} onChange={(event) => setForm({ ...form, area: event.target.value })} required><option value="">Selecciona un área</option>{areas.map((area) => <option key={area} value={area}>{area}</option>)}</select></div><Input name="assigned_user" label="Usuario" form={form} setForm={handleUser} list={users} required /><Input name="brand" label="Marca" form={form} setForm={setForm} list={brands} required /><Input name="model" label="Modelo" form={form} setForm={setForm} list={models} required /><Input name="serial_number" label="Serial" form={form} setForm={setForm} list={serials} required /><div className="col-md-6"><label className="form-label" htmlFor="computer-equipment_type">Tipo de equipo</label><select id="computer-equipment_type" className="form-select" value={form.equipment_type} onChange={(event) => setForm({ ...form, equipment_type: event.target.value })}><option>Portátil</option><option>Torre</option><option>All in One</option></select></div><Input name="processor" label="Procesador" form={form} setForm={setForm} required /><div className="col-md-6"><label className="form-label" htmlFor="computer-ram">RAM</label><select id="computer-ram" className="form-select" value={form.ram} onChange={(event) => setForm({ ...form, ram: event.target.value })}>{["4 GB", "8 GB", "12 GB", "16 GB", "32 GB", "64 GB"].map((value) => <option key={value}>{value}</option>)}</select></div><div className="col-md-6"><label className="form-label" htmlFor="computer-os">Sistema operativo</label><select id="computer-os" className="form-select" value={form.operating_system} onChange={(event) => setForm({ ...form, operating_system: event.target.value })}>{["Windows 10", "Windows 11", "Linux", "macOS"].map((value) => <option key={value}>{value}</option>)}</select></div><div className="col-md-6"><label className="form-label" htmlFor="computer-hdd">HDD</label><select id="computer-hdd" className="form-select" value={form.hdd} onChange={(event) => setForm({ ...form, hdd: event.target.value })}>{storageOptions.map((value) => <option key={value} value={value}>{value || "No aplica"}</option>)}</select></div><div className="col-md-6"><label className="form-label" htmlFor="computer-ssd">SSD</label><select id="computer-ssd" className="form-select" value={form.ssd} onChange={(event) => setForm({ ...form, ssd: event.target.value, nvme: event.target.value ? form.nvme : false })}>{storageOptions.map((value) => <option key={value} value={value}>{value || "No aplica"}</option>)}</select></div><div className="col-md-6 d-flex align-items-end"><div className="form-check mb-2"><input id="computer-nvme" className="form-check-input" type="checkbox" checked={form.nvme} disabled={!form.ssd} onChange={(event) => setForm({ ...form, nvme: event.target.checked })} /><label className="form-check-label" htmlFor="computer-nvme">El SSD es NVMe</label></div></div><div className="col-md-6"><label className="form-label" htmlFor="computer-screen">Tamaño de pantalla</label><select id="computer-screen" className="form-select" value={form.screen_size} onChange={(event) => setForm({ ...form, screen_size: event.target.value })}>{sizes.map((value) => <option key={value}>{value}</option>)}</select></div><div className="col-md-6"><label className="form-label" htmlFor="computer-antivirus">Antivirus</label><select id="computer-antivirus" className="form-select" value={form.antivirus} onChange={(event) => setForm({ ...form, antivirus: event.target.value })}><option>Sophos</option><option>Defender</option></select></div><div className="col-12"><label className="form-label" htmlFor="computer-notes">Observaciones</label><textarea id="computer-notes" className="form-control" rows="3" value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></div><div className="col-12"><button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? "Guardando..." : "Guardar computador"}</button></div></form></div></div></div>;
 }
