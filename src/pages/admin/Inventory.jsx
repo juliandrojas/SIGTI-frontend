@@ -51,11 +51,11 @@ export default function Inventory() {
           {loading ? <p className="text-muted">Cargando...</p> : filteredItems.length === 0 ? <p className="text-muted mb-0">No hay artículos con esos filtros.</p> : (
             <div className="table-responsive">
               <table className="table table-hover align-middle mb-0">
-                <thead><tr><th>Código</th><th>Equipo</th><th>Usuario / Área</th><th>Serial</th><th>IP</th><th>Estado</th></tr></thead>
+                <thead><tr><th>Código</th><th>Equipo</th><th>Usuario / Área</th><th>Serial</th><th>Estado</th></tr></thead>
                 <tbody>
                   {filteredItems.map((item) => (
                     <tr key={item.id}>
-                      <td>{item.asset_code || "-"}</td><td>{item.name}<small className="d-block text-muted">{item.equipment_type || item.brand || "-"}</small></td><td>{item.assigned_user || "-"}<small className="d-block text-muted">{item.area || "-"}</small></td><td>{item.serial_number || "-"}</td><td>{item.ip_address || "-"}</td>
+                      <td>{item.asset_code || "-"}</td><td>{item.name}<small className="d-block text-muted">{item.equipment_type || item.brand || "-"}</small></td><td>{item.assigned_user || "-"}<small className="d-block text-muted">{item.area || "-"}</small></td><td>{item.serial_number || "-"}</td>
                       <td><span className={`badge ${item.status === "available" ? "bg-success" : item.status === "loaned" ? "bg-warning text-dark" : "bg-secondary"}`}>{item.status}</span></td>
                     </tr>
                   ))}
