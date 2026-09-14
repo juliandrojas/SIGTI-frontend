@@ -6,7 +6,7 @@ const initialForm = {
   quantity: "1", available_quantity: "1", condition: "good", location: "bodega", status: "available", notes: "",
 };
 
-export default function RegisterComponent() {
+export default function RegisterComponent({ embedded = false, onSaved }) {
   const [form, setForm] = useState(initialForm);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -20,15 +20,15 @@ export default function RegisterComponent() {
       await api.post("/inventory/items", { ...form, quantity: Number(form.quantity), available_quantity: Number(form.available_quantity) });
       setForm(initialForm);
       setMessage("Componente registrado correctamente.");
+      onSaved?.();
     } catch (err) {
       setError(err?.response?.data?.message || "No se pudo registrar el componente.");
     }
   };
 
   return (
-    <div className="container py-4">
-      <p className="text-uppercase text-primary small fw-semibold mb-1">Gestión de activos</p>
-      <h1 className="h3 fw-bold mb-4">Registrar componente</h1>
+    <div className={embedded ? "" : "container py-4"}>
+      {!embedded && <><p className="text-uppercase text-primary small fw-semibold mb-1">Gestión de activos</p><h1 className="h3 fw-bold mb-4">Registrar componente</h1></>}
       <div className="card shadow-sm border-0">
         <div className="card-body">
           {message && <div className="alert alert-success">{message}</div>}

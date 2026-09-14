@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import RegisterComponent from "./RegisterComponent";
 
 export default function Inventory() {
   const [items, setItems] = useState([]);
@@ -7,6 +8,7 @@ export default function Inventory() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
+  const [showRegister, setShowRegister] = useState(false);
 
   useEffect(() => {
     api.get("/inventory/items")
@@ -27,8 +29,9 @@ export default function Inventory() {
           <p className="text-uppercase text-primary small fw-semibold mb-1">Gestión de activos</p>
           <h1 className="h3 fw-bold mb-0">Inventario</h1>
         </div>
-        <span className="badge text-bg-light border">{filteredItems.length} resultados</span>
+        <div className="d-flex align-items-center gap-2"><span className="badge text-bg-light border">{filteredItems.length} resultados</span><button type="button" className="btn btn-primary" onClick={() => setShowRegister((current) => !current)}>{showRegister ? "Cerrar formulario" : "Registrar componente"}</button></div>
       </div>
+      {showRegister && <div className="card shadow-sm border-0 mb-4"><div className="card-body"><RegisterComponent embedded onSaved={() => { setShowRegister(false); api.get("/inventory/items").then((response) => setItems(response.data)); }} /></div></div>}
       {error && <div className="alert alert-danger">{error}</div>}
       <div className="card shadow-sm border-0">
         <div className="card-body">

@@ -10,7 +10,6 @@ import Maintenance from "./pages/systems/Maintenance";
 import Recovery from "./pages/public/Recovery";
 import RecoveryForm from "./pages/public/RecoveryForm";
 import Register from "./pages/public/Register";
-import RegisterComponent from "./pages/admin/RegisterComponent";
 import Loans from "./pages/admin/Loans";
 import Requests from "./pages/Requests";
 
@@ -23,7 +22,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="inventory" element={<Inventory />} />
           <Route path="loans" element={<Loans />} />
-          <Route path="register" element={<RegisterComponent />} />
+          <Route path="register" element={<Navigate to="/sistemas/inventory" replace />} />
           <Route path="maintenance" element={<Maintenance />} />
           <Route path="requests" element={<Requests />} />
         </Route>
