@@ -10,6 +10,7 @@ import {
 } from "../../utils/maintenance";
 import RegisterComponent from "../admin/RegisterComponent";
 import { filterComputerItems } from "../../utils/inventory";
+import FeedbackModal from "../../components/FeedbackModal";
 
 const newForm = () => ({ item_id: "", performed_at: formatDateDisplay(todayIso()), notes: "" });
 
@@ -99,8 +100,7 @@ export default function Maintenance() {
       <div><p className="page-kicker mb-2">Área de Sistemas</p><h1 className="page-title">Mantenimiento</h1><p className="page-subtitle mb-0">Registra equipos y su mantenimiento semestral.</p></div>
       <span className="status-pill"><i className="bi bi-calendar-check me-2" />Periodicidad: 6 meses</span>
     </div>
-    {message && <div className="alert alert-success">{message}</div>}
-    {error && <div className="alert alert-danger">{error}</div>}
+    <FeedbackModal message={message} error={error} onClose={() => { setMessage(""); setError(""); }} />
     <div className="card card-body mb-4"><h2 className="h5 mb-3">Registrar computador</h2><RegisterComponent embedded existingItems={items} onSaved={load} /></div>
     <div className="card card-body mb-4"><h2 className="h5 mb-3">Registrar mantenimiento</h2>
       <form className="row g-3" onSubmit={submit}>
