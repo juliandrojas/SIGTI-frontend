@@ -46,7 +46,7 @@ export default function Navbar({ brand = "Navbar", links = [], onLogout }) {
                   }
                   to={link.href || "#"}
                 >
-                  <i className={`bi ${link.icon || "bi-grid-1x2"} me-2`} aria-hidden="true" /><span>{link.text}</span>
+                  <span className="request-nav-content"><i className={`bi ${link.icon || "bi-grid-1x2"}`} aria-hidden="true" /><span>{link.text}</span></span>
                 </NavLink>
               </li>
             ))}
