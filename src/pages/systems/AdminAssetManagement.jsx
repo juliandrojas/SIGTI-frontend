@@ -25,6 +25,7 @@ export default function AdminAssetManagement() {
   const [rejectionRequest, setRejectionRequest] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [deliveryRequest, setDeliveryRequest] = useState(null);
+  const [returnRecord, setReturnRecord] = useState(null);
   const [statusRecord, setStatusRecord] = useState(null);
 
   const load = async () => {
@@ -84,6 +85,15 @@ export default function AdminAssetManagement() {
     completeAction(() => api.patch(`/inventory/requests/${request.id}/deliver`, { previous_component_received: request.request_type === "permanent_replacement" }));
   };
 
+  const confirmReturn = () => {
+    if (!returnRecord) return;
+    const { record, kind } = returnRecord;
+    setReturnRecord(null);
+    completeAction(() => kind === "request"
+      ? api.patch(`/inventory/requests/${record.id}/return`)
+      : api.patch(`/inventory/loans/${record.id}/return`, { actual_return_datetime: new Date().toISOString(), return_signature: "Entrega registrada por sistema" }));
+  };
+
   const action = (record, kind) => {
     if (kind === "reject") {
       setRejectionRequest(record);
@@ -93,11 +103,17 @@ export default function AdminAssetManagement() {
       setDeliveryRequest(record);
       return;
     }
+    if (kind === "request-return") {
+      setReturnRecord({ record, kind: "request" });
+      return;
+    }
+    if (kind === "loan-return") {
+      setReturnRecord({ record, kind: "loan" });
+      return;
+    }
     completeAction(() => kind === "deliver"
       ? api.patch(`/inventory/requests/${record.id}/deliver`, { previous_component_received: false })
-      : kind === "request-return"
-        ? api.patch(`/inventory/requests/${record.id}/return`)
-        : api.patch(`/inventory/loans/${record.id}/return`, { actual_return_datetime: new Date().toISOString(), return_signature: "Entrega registrada por sistema" }));
+      : api.patch(`/inventory/loans/${record.id}/return`, { actual_return_datetime: new Date().toISOString(), return_signature: "Entrega registrada por sistema" }));
   };
 
   const normalizedSearch = search.toLowerCase();
@@ -117,6 +133,7 @@ export default function AdminAssetManagement() {
 
     {rejectionRequest && <div className="modal d-block" role="dialog" aria-modal="true" aria-labelledby="reject-request-title" style={{ background: "rgba(15, 23, 42, .45)" }}><div className="modal-dialog modal-dialog-centered"><div className="modal-content admin-action-modal"><div className="modal-header"><h2 className="modal-title h5" id="reject-request-title">Rechazar solicitud</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={() => { setRejectionRequest(null); setRejectionReason(""); }} /></div><div className="modal-body"><p>¿Deseas rechazar la solicitud de <strong>{rejectionRequest.requested_by}</strong> para <strong>{rejectionRequest.item_name}</strong>?</p><label className="form-label" htmlFor="rejection-reason">Motivo del rechazo <span className="text-muted">(opcional)</span></label><textarea id="rejection-reason" className="form-control" rows="3" value={rejectionReason} onChange={(event) => setRejectionReason(event.target.value)} placeholder="Escribe un motivo para dejar registro." /></div><div className="modal-footer"><button type="button" className="btn btn-outline-secondary" onClick={() => { setRejectionRequest(null); setRejectionReason(""); }}>Cancelar</button><button type="button" className="btn btn-danger" onClick={rejectRequest}>Rechazar solicitud</button></div></div></div></div>}
     {deliveryRequest && <div className="modal d-block" role="dialog" aria-modal="true" aria-labelledby="deliver-request-title" style={{ background: "rgba(15, 23, 42, .45)" }}><div className="modal-dialog modal-dialog-centered"><div className="modal-content admin-action-modal"><div className="modal-header"><h2 className="modal-title h5" id="deliver-request-title">Confirmar cambio definitivo</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setDeliveryRequest(null)} /></div><div className="modal-body"><p className="mb-0">Confirma que recibiste el componente anterior de <strong>{deliveryRequest.requested_by}</strong> antes de entregar el nuevo elemento.</p></div><div className="modal-footer"><button type="button" className="btn btn-outline-secondary" onClick={() => setDeliveryRequest(null)}>Cancelar</button><button type="button" className="btn btn-success" onClick={deliverRequest}>Confirmar y entregar</button></div></div></div></div>}
+    {returnRecord && <div className="modal d-block" role="dialog" aria-modal="true" aria-labelledby="return-record-title" style={{ background: "rgba(15, 23, 42, .45)" }} onClick={(event) => { if (event.target === event.currentTarget) setReturnRecord(null); }}><div className="modal-dialog modal-dialog-centered"><div className="modal-content admin-action-modal"><div className="modal-header"><h2 className="modal-title h5" id="return-record-title">Registrar devolución</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setReturnRecord(null)} /></div><div className="modal-body"><p>Confirma que <strong>{returnRecord.record.requested_by}</strong> devolvió el componente.</p><dl className="row mb-0"><dt className="col-sm-5">Elemento</dt><dd className="col-sm-7">{returnRecord.record.item_name || "—"}</dd><dt className="col-sm-5">Cantidad</dt><dd className="col-sm-7">{returnRecord.record.quantity || "—"}</dd><dt className="col-sm-5">Devolución esperada</dt><dd className="col-sm-7">{date(returnRecord.record.expected_return_datetime)}</dd></dl></div><div className="modal-footer"><button type="button" className="btn btn-outline-secondary" onClick={() => setReturnRecord(null)}>Cancelar</button><button type="button" className="btn btn-success" onClick={confirmReturn}>Registrar devolución</button></div></div></div></div>}
     {statusRecord && <div className="modal d-block" role="dialog" aria-modal="true" aria-labelledby="status-detail-title" style={{ background: "rgba(15, 23, 42, .45)" }} onClick={(event) => { if (event.target === event.currentTarget) closeStatus(); }}><div className="modal-dialog modal-dialog-centered"><div className="modal-content admin-action-modal"><div className="modal-header"><h2 className="modal-title h5" id="status-detail-title">Detalle del estado</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={closeStatus} /></div><div className="modal-body"><div className="d-flex justify-content-between align-items-center mb-3"><span className={`badge ${statusClass(statusRecord.record.status)}`}>{labels[statusRecord.record.status] || statusRecord.record.status}</span><span className="text-muted small">{statusRecord.kind === "loan" ? "Préstamo" : labels[statusRecord.record.request_type]}</span></div><dl className="row mb-0"><dt className="col-sm-5">Solicitante</dt><dd className="col-sm-7">{statusRecord.record.requested_by || "—"}</dd><dt className="col-sm-5">Elemento</dt><dd className="col-sm-7">{statusRecord.record.item_name || "—"}</dd><dt className="col-sm-5">Cantidad</dt><dd className="col-sm-7">{statusRecord.record.quantity || "—"}</dd><dt className="col-sm-5">Fecha de registro</dt><dd className="col-sm-7">{date(statusRecord.record.created_at || statusRecord.record.start_datetime)}</dd>{statusRecord.record.expected_return_datetime && <><dt className="col-sm-5">Devolución esperada</dt><dd className="col-sm-7">{date(statusRecord.record.expected_return_datetime)}</dd></>}{statusRecord.record.actual_return_datetime && <><dt className="col-sm-5">Devolución registrada</dt><dd className="col-sm-7">{date(statusRecord.record.actual_return_datetime)}</dd></>}{statusRecord.record.rejection_reason && <><dt className="col-sm-5">Motivo del rechazo</dt><dd className="col-sm-7">{statusRecord.record.rejection_reason}</dd></>}</dl></div><div className="modal-footer"><button type="button" className="btn btn-primary" onClick={closeStatus}>Cerrar</button></div></div></div></div>}
   </main>;
 }
