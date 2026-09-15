@@ -41,12 +41,12 @@ export default function Navbar({ brand = "Navbar", links = [], onLogout }) {
                 <NavLink
                   className={({ isActive }) =>
                     link.button
-                      ? `btn btn-primary btn-sm mt-2 mt-lg-0 request-nav-button ${isActive || link.active ? "active" : ""}`
+                      ? `btn btn-primary btn-sm mt-2 mt-lg-0 topbar-action ${isActive || link.active ? "active" : ""}`
                       : `nav-link ${isActive || link.active ? "active fw-semibold" : ""}`
                   }
                   to={link.href || "#"}
                 >
-                  <span className="request-nav-content"><i className={`bi ${link.icon || "bi-grid-1x2"}`} aria-hidden="true" /><span>{link.text}</span></span>
+                  {link.button ? <span className="topbar-action-content"><i className={`bi ${link.icon || "bi-grid-1x2"}`} aria-hidden="true" /><span>{link.text}</span></span> : <><i className={`bi ${link.icon || "bi-grid-1x2"} me-2`} aria-hidden="true" />{link.text}</>}
                 </NavLink>
               </li>
             ))}
