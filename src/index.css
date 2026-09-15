@@ -24,8 +24,11 @@ a, button, select { cursor: pointer; } a { color: var(--color-accent-dark); }
 .app-navbar .container-fluid { width: min(100%, 1440px); padding: 0 32px; }
 .app-navbar .navbar-brand { color: #fff; font-size: .98rem; letter-spacing: .03em; }
 .brand-mark, .auth-logo { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 13px; background: linear-gradient(145deg, #10b981, #047857); color: #fff; box-shadow: 4px 4px 9px rgba(0,0,0,.2), -3px -3px 8px rgba(255,255,255,.1); }
+.app-navbar .navbar-nav { align-items: center; gap: 8px; }
+.app-navbar .navbar-nav .ms-lg-2 { margin-left: 0 !important; }
 .app-navbar .nav-link { min-height: 44px; display: inline-flex; align-items: center; color: #cbd5e1; border-radius: 12px; padding: 10px 13px; transition: color var(--transition), background var(--transition), transform var(--transition); }
-.app-navbar .topbar-action { display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.5; }
+.app-navbar .topbar-action { display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.5; box-shadow: none !important; filter: none; }
+.app-navbar .topbar-action:hover, .app-navbar .topbar-action:focus, .app-navbar .topbar-action:active { box-shadow: none !important; filter: none; }
 .app-navbar .topbar-action-content { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; }
 .app-navbar .nav-link:hover, .app-navbar .nav-link.active { color: #fff; background: rgba(255,255,255,.11); }
 .app-navbar .nav-link:active, .app-navbar .btn-logout:active { transform: translateY(1px); }
