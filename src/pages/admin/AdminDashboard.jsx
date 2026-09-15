@@ -5,6 +5,7 @@ import { getStoredUser } from "../../utils/auth";
 
 export default function AdminDashboard() {
   const user = getStoredUser();
+  const displayName = [user?.name, user?.lastname].filter(Boolean).join(" ") || "Usuario";
   const [items, setItems] = useState([]);
   const [maintenanceRecords, setMaintenanceRecords] = useState([]);
   const [error, setError] = useState("");
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
           <h1 className="page-title mb-2">Dashboard de inventario</h1>
           <p className="page-subtitle mb-0">Una vista rápida del estado de tus activos y préstamos.</p>
         </div>
-        <span className="status-pill"><i className="bi bi-person-circle me-2" aria-hidden="true" />{user?.username || "Usuario"}</span>
+        <span className="status-pill"><i className="bi bi-person-circle me-2" aria-hidden="true" />{displayName}</span>
       </div>
       {error && <div className="alert alert-danger" role="alert"><i className="bi bi-exclamation-triangle me-2" aria-hidden="true" />{error}</div>}
       <section className="row g-3" aria-label="Resumen del inventario y mantenimientos">
