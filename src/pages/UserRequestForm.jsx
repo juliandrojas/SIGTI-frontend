@@ -7,7 +7,7 @@ export default function UserRequestForm({ name, area, items, form, setForm, sele
   });
   return <main className="app-page">
     <div className="row justify-content-center"><div className="col-xl-9">
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4"><div><p className="page-kicker mb-2">Servicios de tecnología</p><h1 className="page-title mb-2">Nueva solicitud</h1><p className="page-subtitle mb-0">Solicita un periférico o un cambio de componente para continuar tu trabajo.</p></div><span className="status-pill"><i className="bi bi-headset me-2" />Atención de Sistemas</span></div>
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4"><div><p className="page-kicker mb-2">Servicios de tecnología</p><h1 className="page-title mb-2">Nueva solicitud</h1><p className="page-subtitle mb-0">Solicita un periférico o un cambio de componente para continuar tu trabajo.</p></div><span className="status-pill"><i className="bi bi-person-circle me-2" aria-hidden="true" />{name || "Usuario"}</span></div>
       <form className="card request-form-card" onSubmit={submit}>
         <div className="card-body p-4 p-lg-5">
           <div className="request-section-heading"><span className="request-section-icon"><i className="bi bi-person-check" /></span><div><h2 className="h5 mb-1">Tus datos</h2><p className="text-muted small mb-0">Se completan automáticamente con tu perfil.</p></div></div>
