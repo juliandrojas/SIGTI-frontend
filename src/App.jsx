@@ -11,6 +11,7 @@ import Recovery from "./pages/public/Recovery";
 import RecoveryForm from "./pages/public/RecoveryForm";
 import Register from "./pages/public/Register";
 import Requests from "./pages/Requests";
+import UserRequestHistory from "./pages/UserRequestHistory";
 import AdminAssetManagement from "./pages/systems/AdminAssetManagement";
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <Route path="/usuario" element={<UsuarioLayout />}>
           <Route index element={<Navigate to="requests" replace />} />
           <Route path="requests" element={<Requests />} />
+          <Route path="requests/history" element={<UserRequestHistory />} />
           <Route path="loans" element={<Navigate to="requests" replace />} />
         </Route>
       </Route>

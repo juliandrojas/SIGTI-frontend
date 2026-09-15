@@ -13,6 +13,7 @@ export default function UsuarioLayout() {
   const getLinksForRole = () => {
     return [
       { text: "Hacer una solicitud", href: "/usuario/requests", icon: "bi-send-plus", button: true },
+      { text: "Mis solicitudes", href: "/usuario/requests/history", icon: "bi-list-check" },
     ];
   };
 
