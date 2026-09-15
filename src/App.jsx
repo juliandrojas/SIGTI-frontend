@@ -10,8 +10,8 @@ import Maintenance from "./pages/systems/Maintenance";
 import Recovery from "./pages/public/Recovery";
 import RecoveryForm from "./pages/public/RecoveryForm";
 import Register from "./pages/public/Register";
-import Loans from "./pages/admin/Loans";
 import Requests from "./pages/Requests";
+import AdminAssetManagement from "./pages/systems/AdminAssetManagement";
 
 function App() {
   return (
@@ -21,10 +21,10 @@ function App() {
         <Route path="/sistemas" element={<SistemasLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="inventory" element={<Inventory />} />
-          <Route path="loans" element={<Loans />} />
+          <Route path="loans" element={<AdminAssetManagement />} />
           <Route path="register" element={<Navigate to="/sistemas/inventory" replace />} />
           <Route path="maintenance" element={<Maintenance />} />
-          <Route path="requests" element={<Requests />} />
+          <Route path="requests" element={<AdminAssetManagement />} />
         </Route>
       </Route>
 
