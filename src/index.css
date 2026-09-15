@@ -74,6 +74,7 @@ a, button, select { cursor: pointer; } a { color: var(--color-accent-dark); }
 .min-vh-100.bg-light > .card .card-body { padding: clamp(22px, 5vw, 38px); }
 .min-vh-100.bg-light .form-control { background: rgba(247,251,249,.82) !important; border: 1px solid rgba(122,157,145,.28) !important; }
 .modal-content { background: var(--color-card); border-radius: var(--radius-lg) !important; box-shadow: var(--shadow-clay) !important; }
+.inventory-delete-modal { background: #fff !important; color: var(--color-foreground); border: 1px solid rgba(15, 23, 42, .14) !important; box-shadow: none !important; filter: none !important; }
 
 @media (max-width: 991.98px) {
   .app-navbar .container-fluid { padding: 0 20px; }

@@ -19,6 +19,7 @@ export default function Inventory() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
 
@@ -83,12 +84,15 @@ export default function Inventory() {
     }
   };
 
-  const remove = async (item) => {
-    if (!window.confirm(`¿Eliminar ${item.name}? Esta acción no se puede deshacer.`)) return;
+  const remove = (item) => setItemToDelete(item);
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
     setError("");
     try {
-      await api.delete(`/inventory/items/${item.id}`);
+      await api.delete(`/inventory/items/${itemToDelete.id}`);
       setMessage("Artículo eliminado correctamente.");
+      setItemToDelete(null);
       await load();
     } catch (err) {
       setError(err?.response?.data?.message || "No se pudo eliminar el artículo.");
@@ -121,5 +125,6 @@ export default function Inventory() {
       <div className="col-12 d-flex gap-2"><button className="btn btn-primary" type="submit" disabled={saving}>{saving ? "Guardando..." : editingId ? "Guardar cambios" : "Registrar artículo"}</button><button className="btn btn-outline-secondary" type="button" onClick={resetForm}>Cancelar</button></div>
     </form></div></div>}
     <div className="card shadow-sm border-0"><div className="card-body"><div className="row g-2 mb-4"><div className="col-md-8 position-relative"><label className="visually-hidden" htmlFor="inventory-search">Buscar por nombre</label><input id="inventory-search" className="form-control" placeholder="Buscar por nombre, marca, modelo o serial" value={search} autoComplete="off" onChange={(event) => setSearch(event.target.value)} />{suggestions.length > 0 && <div className="list-group position-absolute w-100 shadow-sm" style={{ zIndex: 10 }} role="listbox" aria-label="Sugerencias de búsqueda">{suggestions.map((suggestion) => <button key={suggestion} type="button" className="list-group-item list-group-item-action" onMouseDown={(event) => event.preventDefault()} onClick={() => setSearch(suggestion)}><i className="bi bi-search me-2 text-muted" aria-hidden="true" />{suggestion}</button>)}</div>}</div><div className="col-md-4"><label className="visually-hidden" htmlFor="inventory-status">Filtrar por estado</label><select id="inventory-status" className="form-select" value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">Todos los estados</option><option value="available">Disponible</option><option value="loaned">Prestado</option><option value="maintenance">Mantenimiento</option></select></div></div>{loading ? <p className="text-muted">Cargando...</p> : filteredItems.length === 0 ? <p className="text-muted mb-0">No hay artículos con esos filtros.</p> : <div className="table-responsive"><table className="table table-hover align-middle mb-0"><thead><tr><th>Artículo</th><th>Marca / modelo</th><th>Serial</th><th>Cantidad</th><th>Condición</th><th>Estado</th><th className="text-end">Acciones</th></tr></thead><tbody>{filteredItems.map((item) => <tr key={item.id}><td className="fw-semibold">{item.name}<small className="d-block text-muted">{item.location || "Sin ubicación"}</small></td><td>{[item.brand, item.model].filter(Boolean).join(" / ") || "-"}</td><td>{item.serial_number || "-"}</td><td>{item.available_quantity} / {item.quantity}</td><td>{conditionLabels[item.condition] || item.condition || "-"}</td><td><span className={`badge ${item.status === "available" ? "bg-success" : item.status === "loaned" ? "bg-warning text-dark" : "bg-secondary"}`}>{statusLabels[item.status] || item.status}</span></td><td className="text-end"><button className="btn btn-sm btn-outline-primary me-1" type="button" onClick={() => editItem(item)}>Editar</button><button className="btn btn-sm btn-outline-danger" type="button" onClick={() => remove(item)}>Eliminar</button></td></tr>)}</tbody></table></div>}</div></div>
+    {itemToDelete && <div className="modal d-block" role="dialog" aria-modal="true" aria-labelledby="delete-inventory-title" style={{ background: "rgba(15, 23, 42, .45)" }}><div className="modal-dialog modal-dialog-centered"><div className="modal-content inventory-delete-modal"><div className="modal-header"><h2 className="modal-title h5" id="delete-inventory-title">Eliminar artículo</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setItemToDelete(null)} /></div><div className="modal-body"><p className="mb-0">¿Eliminar <strong>{itemToDelete.name}</strong>? Esta acción no se puede deshacer.</p></div><div className="modal-footer"><button type="button" className="btn btn-outline-secondary" onClick={() => setItemToDelete(null)}>Cancelar</button><button type="button" className="btn btn-danger" onClick={confirmDelete}>Eliminar</button></div></div></div></div>}
   </div>;
 }
