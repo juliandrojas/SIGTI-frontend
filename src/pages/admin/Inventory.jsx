@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import { filterPeripheralItems, getInventorySearchSuggestions } from "../../utils/inventory";
+import FeedbackModal from "../../components/FeedbackModal";
 
 const emptyForm = {
   name: "", category: "component", brand: "", reference: "", model: "", serial_number: "",
@@ -108,8 +109,7 @@ export default function Inventory() {
 
   return <div className="container py-4">
     <div className="d-flex justify-content-between align-items-center mb-4"><div><p className="text-uppercase text-primary small fw-semibold mb-1">Periféricos</p><h1 className="h3 fw-bold mb-0">Inventario</h1></div><div className="d-flex align-items-center gap-2"><span className="badge text-bg-light border">{filteredItems.length} periféricos</span><button className="btn btn-primary" type="button" onClick={() => { resetForm(); setShowForm(true); }}>Nuevo artículo</button></div></div>
-    {message && <div className="alert alert-success">{message}</div>}
-    {error && <div className="alert alert-danger">{error}</div>}
+    <FeedbackModal message={message} error={error} onClose={() => { setMessage(""); setError(""); }} />
     {showForm && <div className="card shadow-sm border-0 mb-4"><div className="card-body"><div className="d-flex justify-content-between align-items-center mb-3"><h2 className="h5 mb-0">{editingId ? "Editar artículo" : "Registrar artículo"}</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={resetForm} /></div><form onSubmit={submit} className="row g-3">
       <div className="col-md-6"><label className="form-label" htmlFor="component-name">Nombre *</label><input id="component-name" className="form-control" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></div>
       <div className="col-md-6"><label className="form-label" htmlFor="component-brand">Marca</label><input id="component-brand" className="form-control" value={form.brand || ""} onChange={(e) => setForm({ ...form, brand: e.target.value })} /></div>

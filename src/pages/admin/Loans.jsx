@@ -3,6 +3,7 @@ import api from "../../api/axios";
 import { employeeAreas } from "../../data/employeeAreas";
 import { canViewLoanForm, canViewLoanHistory, getStoredUser } from "../../utils/auth";
 import { filterPeripheralItems } from "../../utils/inventory";
+import FeedbackModal from "../../components/FeedbackModal";
 
 const initialForm = {
   item_id: "",
@@ -144,9 +145,7 @@ export default function Loans() {
 
   return (
     <div className="container py-4">
-      {/* Mensajes globales */}
-      {message && <div className="alert alert-success alert-dismissible fade show">{message}</div>}
-      {error && <div className="alert alert-danger alert-dismissible fade show">{error}</div>}
+      <FeedbackModal message={message} error={error} onClose={() => { setMessage(""); setError(""); }} />
 
       {/* Si el usuario no tiene permisos para ninguna de las dos vistas */}
       {!showForm && !showHistory && !loading && (
