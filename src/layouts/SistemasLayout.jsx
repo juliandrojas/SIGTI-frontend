@@ -14,8 +14,7 @@ export default function SistemasLayout() {
     return [
       { text: "Inicio", href: "/sistemas", icon: "bi-house" },
       { text: "Inventario", href: "/sistemas/inventory", icon: "bi-boxes" },
-      { text: "Préstamos", href: "/sistemas/loans", icon: "bi-arrow-left-right" },
-      { text: "Solicitudes", href: "/sistemas/requests", icon: "bi-clipboard-check" },
+      { text: "Préstamos y solicitudes", href: "/sistemas/requests", icon: "bi-arrow-left-right" },
       { text: "Mantenimiento", href: "/sistemas/maintenance", icon: "bi-tools" },
     ];
   };
