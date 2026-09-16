@@ -76,7 +76,7 @@ export default function Login() {
             <div className="text-center mb-4">
               <span className="auth-logo mb-3"><img src="/petrocasinos-logo.png" alt="Petrocasinos" /></span>
               <h4 className="fw-bold mb-1">Bienvenido a PETRO-SIGTI</h4>
-              <p className="text-muted small">Mesa de ayuda y gestión de activos TI</p>
+              <p className="text-muted small">Gestión de Activos TI</p>
             </div>
 
             {/* Alerta de error si falla el login */}
