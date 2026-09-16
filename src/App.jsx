@@ -7,8 +7,6 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Inventory from "./pages/admin/Inventory";
 import Maintenance from "./pages/systems/Maintenance";
-import Recovery from "./pages/public/Recovery";
-import RecoveryForm from "./pages/public/RecoveryForm";
 import Register from "./pages/public/Register";
 import Requests from "./pages/Requests";
 import UserRequestHistory from "./pages/UserRequestHistory";
@@ -42,8 +40,6 @@ function App() {
       {/* ─── 3. Rutas públicas ─── */}
       <Route element={<PublicLayout />}>
         <Route path="/register" element={<Register />} />
-        <Route path="/recovery" element={<Recovery />} />
-        <Route path="/recovery/:token" element={<RecoveryForm />} />
       </Route>
 
       <Route path="/login" element={<Login />} />
