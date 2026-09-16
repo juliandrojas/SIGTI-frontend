@@ -15,7 +15,7 @@ export default function Navbar({ brand = "Navbar", links = [], onLogout }) {
       <div className="container-fluid">
         {/* Título / Marca a la izquierda */}
         <Link className="navbar-brand d-flex align-items-center gap-2" to={brandPath}>
-          <span className="brand-mark" aria-hidden="true"><i className="bi bi-box-seam" /></span>
+          <span className="brand-mark"><img src="/petrocasinos-logo.png" alt="Petrocasinos" /></span>
           <span>{brand}</span>
         </Link>
 

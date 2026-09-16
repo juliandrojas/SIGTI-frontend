@@ -74,7 +74,7 @@ export default function Login() {
           <div className="card-body">
             {/* Encabezado */}
             <div className="text-center mb-4">
-              <span className="auth-logo mb-3"><i className="bi bi-box-seam" aria-hidden="true" /></span>
+              <span className="auth-logo mb-3"><img src="/petrocasinos-logo.png" alt="Petrocasinos" /></span>
               <h4 className="fw-bold mb-1">Bienvenido a PETRO-SIGTI</h4>
               <p className="text-muted small">Mesa de ayuda y gestión de activos TI</p>
             </div>

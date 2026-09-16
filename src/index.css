@@ -24,7 +24,8 @@ a, button, select { cursor: pointer; } a { color: var(--color-accent-dark); }
 .app-navbar { background: rgba(44, 48, 78, .98); border: 0; min-height: 72px; box-shadow: 0 8px 24px rgba(44, 48, 78, .22); }
 .app-navbar .container-fluid { width: min(100%, 1440px); padding: 0 32px; }
 .app-navbar .navbar-brand { color: #fff; font-size: .98rem; letter-spacing: .03em; }
-.brand-mark, .auth-logo { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 13px; background: linear-gradient(145deg, #42486f, #2c304e); color: #fff; box-shadow: 4px 4px 9px rgba(0,0,0,.2), -3px -3px 8px rgba(255,255,255,.1); }
+.brand-mark, .auth-logo { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 13px; background: #fff; overflow: hidden; box-shadow: 4px 4px 9px rgba(0,0,0,.2), -3px -3px 8px rgba(255,255,255,.1); }
+.brand-mark img, .auth-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .app-navbar .navbar-nav { align-items: center; gap: 8px; }
 .app-navbar .navbar-nav .ms-lg-2 { margin-left: 0 !important; }
 .app-navbar .nav-link { min-height: 44px; display: inline-flex; align-items: center; color: #cbd5e1; border-radius: 12px; padding: 10px 13px; transition: color var(--transition), background var(--transition), transform var(--transition); }
@@ -75,7 +76,7 @@ a, button, select { cursor: pointer; } a { color: var(--color-accent-dark); }
 .auth-shell, .min-vh-100.bg-light { min-height: calc(100svh - 72px); display: grid; place-items: center; padding: clamp(28px, 6vw, 64px) 16px; background: radial-gradient(circle at 15% 10%, #d8f7e8 0, transparent 28rem), var(--color-background) !important; }
 .auth-card { width: min(100%, 460px); }
 .auth-card .card-body { padding: clamp(24px, 6vw, 42px); }
-.auth-logo { width: 50px; height: 50px; border-radius: 16px; }
+.auth-logo { width: 50px; height: 50px; border-radius: 16px; padding: 4px; }
 .min-vh-100.bg-light > .card { width: min(100%, 480px) !important; padding: 4px !important; }
 .min-vh-100.bg-light > .card .card-body { padding: clamp(22px, 5vw, 38px); }
 .min-vh-100.bg-light .form-control { background: rgba(247,251,249,.82) !important; border: 1px solid rgba(122,157,145,.28) !important; }
