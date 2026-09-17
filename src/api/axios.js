@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { clearSession, getToken } from '../utils/auth';
 
+// El frontend puede ejecutarse localmente sin levantar otra instancia del backend.
+// Para desarrollo local usamos producción salvo que se defina explícitamente VITE_API_URL.
+const productionApiUrl = import.meta.env.VITE_API_URL_PROD || 'https://sigti-backend.vercel.app/';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : 'https://sigti-backend.vercel.app/'),
+  baseURL: import.meta.env.VITE_API_URL || productionApiUrl,
   headers: {
     'Content-Type': 'application/json',
   },
