@@ -11,6 +11,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+let redirectingToLogin = false;
 // Opcional: Interceptor para enviar el token JWT automáticamente si existe
 api.interceptors.request.use(
   (config) => {
@@ -26,12 +27,20 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      clearSession();
+    const hasExpiredSession = error.response?.status === 401
+      && Boolean(getToken())
+      && window.location.pathname !== '/login';
 
-      if (window.location.pathname !== '/login') {
-        window.location.assign('/login');
+    if (redirectingToLogin || hasExpiredSession) {
+      if (!redirectingToLogin) {
+        redirectingToLogin = true;
+        clearSession();
+        window.location.replace('/login');
       }
+
+      // Evita que los catch de la vista alcancen a mostrar un modal mientras
+      // el navegador reemplaza la ruta protegida por el inicio de sesión.
+      return new Promise(() => {});
     }
 
     return Promise.reject(error);
