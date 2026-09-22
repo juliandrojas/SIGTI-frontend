@@ -93,6 +93,14 @@ a, button, select { cursor: pointer; } a { color: var(--color-accent-dark); }
 .maintenance-equipment-options .list-group-item { border-left: 0; border-right: 0; padding: 10px 12px; }
 .maintenance-equipment-options .list-group-item:first-child { border-top: 0; }
 
+/* Mantiene el indicador NVMe asociado visualmente al campo SSD. */
+@media (min-width: 768px) {
+  form:has(#computer-nvme) > .col-md-6:has(#computer-nvme) {
+    margin-left: 50%;
+    align-items: flex-start !important;
+  }
+}
+
 @media (max-width: 991.98px) {
   .app-navbar .container-fluid { padding: 0 20px; }
   .app-navbar .navbar-collapse { padding: 12px 0 4px; }
