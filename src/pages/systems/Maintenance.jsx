@@ -11,6 +11,7 @@ import {
 import RegisterComponent from "../admin/RegisterComponent";
 import { filterComputerItems } from "../../utils/inventory";
 import FeedbackModal from "../../components/FeedbackModal";
+import EditMaintenanceModal from "./EditMaintenanceModal";
 
 const newForm = () => ({ item_id: "", performed_at: formatDateDisplay(todayIso()), notes: "" });
 
@@ -23,6 +24,7 @@ export default function Maintenance() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [duplicateRecord, setDuplicateRecord] = useState(null);
+  const [editingRecord, setEditingRecord] = useState(null);
   const performedDate = parseDisplayDate(form.performed_at);
   const nextDate = performedDate ? addMaintenancePeriod(performedDate) : "";
   const equipmentLabel = (item) => [item.asset_code, item.name, item.serial_number].filter(Boolean).join(" — ");
@@ -106,6 +108,12 @@ export default function Maintenance() {
     saveMaintenance();
   };
 
+  const maintenanceUpdated = () => {
+    setEditingRecord(null);
+    setMessage("Mantenimiento actualizado correctamente.");
+    load();
+  };
+
   return <main className="app-page">
     <div className="d-flex justify-content-between align-items-end gap-3 mb-4">
       <div><p className="page-kicker mb-2">Área de Sistemas</p><h1 className="page-title">Mantenimiento</h1><p className="page-subtitle mb-0">Registra equipos y su mantenimiento semestral.</p></div>
@@ -122,7 +130,25 @@ export default function Maintenance() {
         <div className="col-12"><button className="btn btn-primary" type="submit">Guardar mantenimiento</button></div>
       </form>
     </div>
-    <div className="card"><div className="card-body"><div className="d-flex justify-content-between align-items-center mb-3"><h2 className="h5 mb-0">Historial de Mantenimiento</h2><span className="badge text-bg-light border">{records.length} registros</span></div><div className="table-responsive"><table className="table table-hover align-middle mb-0"><thead><tr><th>Código</th><th>Equipo</th><th>Fecha</th><th>Próxima fecha</th><th>Técnico</th><th>Observaciones</th></tr></thead><tbody>{records.map((record) => <tr key={record.id}><td className="fw-semibold">{getRecordAssetCode(record)}</td><td>{record.item_name}<small className="d-block text-muted">{record.serial_number || "Sin serial"}</small></td><td>{formatDateDisplay(record.performed_at)}</td><td>{formatDateDisplay(record.next_due_date)}</td><td>{[record.technician_name, record.technician_lastname].filter(Boolean).join(" ") || "-"}</td><td>{record.notes || "-"}</td></tr>)}{!records.length && <tr><td colSpan="6" className="text-center text-muted py-4">Aún no hay mantenimientos registrados.</td></tr>}</tbody></table></div></div></div>
+    <div className="card"><div className="card-body">
+      <div className="d-flex justify-content-between align-items-center mb-3"><h2 className="h5 mb-0">Historial de Mantenimiento</h2><span className="badge text-bg-light border">{records.length} registros</span></div>
+      <div className="table-responsive"><table className="table table-hover align-middle mb-0">
+        <thead><tr><th>Código</th><th>Equipo</th><th>Fecha</th><th>Próxima fecha</th><th>Técnico</th><th>Observaciones</th><th>Acciones</th></tr></thead>
+        <tbody>
+          {records.map((record) => <tr key={record.id}>
+            <td className="fw-semibold">{getRecordAssetCode(record)}</td>
+            <td>{record.item_name}<small className="d-block text-muted">{record.serial_number || "Sin serial"}</small></td>
+            <td>{formatDateDisplay(record.performed_at)}</td>
+            <td>{formatDateDisplay(record.next_due_date)}</td>
+            <td>{[record.technician_name, record.technician_lastname].filter(Boolean).join(" ") || "-"}</td>
+            <td>{record.notes || "-"}</td>
+            <td><button type="button" className="btn btn-sm btn-outline-primary" onClick={() => { setEditingRecord(record); setMessage(""); setError(""); }}>Editar</button></td>
+          </tr>)}
+          {!records.length && <tr><td colSpan="7" className="text-center text-muted py-4">Aún no hay mantenimientos registrados.</td></tr>}
+        </tbody>
+      </table></div>
+    </div></div>
+    {editingRecord && <EditMaintenanceModal record={editingRecord} onClose={() => setEditingRecord(null)} onSaved={maintenanceUpdated} />}
     {duplicateRecord && <div className="modal d-block" role="dialog" aria-modal="true" aria-labelledby="duplicate-maintenance-title" style={{ background: "rgba(15, 23, 42, .45)" }}><div className="modal-dialog modal-dialog-centered"><div className="modal-content"><div className="modal-header"><h2 className="modal-title h5" id="duplicate-maintenance-title">Mantenimiento reciente</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setDuplicateRecord(null)} /></div><div className="modal-body"><p className="mb-0">{duplicateRecord.message || `A este equipo ya se le hizo mantenimiento. El próximo está programado para el ${formatDateDisplay(duplicateRecord.next_due_date)}.`}</p></div><div className="modal-footer"><button type="button" className="btn btn-primary" onClick={() => setDuplicateRecord(null)}>Entendido</button></div></div></div></div>}
   </main>;
 }
