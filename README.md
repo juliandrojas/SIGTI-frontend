@@ -1,16 +1,24 @@
-# React + Vite
+# SIGTI — interfaz web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interfaz React/Vite de **Gestión de Activos TI**. El frontend presenta solicitudes de colaboradores y las vistas de inventario, préstamos y mantenimiento para Sistemas; la lógica de negocio y los permisos se validan en la API del repositorio `SIGTI-backend`.
 
-Currently, two official plugins are available:
+## Desarrollo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```powershell
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
 
-## React Compiler
+`VITE_API_URL` indica la URL del backend. Sin esa variable, `src/api/axios.js` utiliza la URL de producción definida allí; el frontend local **no** inicia una API local automáticamente. No coloques secretos en variables `VITE_*`: se incluyen en la compilación del navegador.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Verificación y compilación
 
-## Expanding the ESLint configuration
+```powershell
+npm run lint
+npm run build
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+`vercel.json` redirige las rutas de la aplicación de una sola página a `index.html`. Antes de publicar, confirma que `VITE_API_URL` del entorno de despliegue apunta a la API autorizada.
+
+La documentación de entrega (manual de usuario, guía técnica y migración a PostgreSQL propio) se mantiene en el repositorio de backend, en `docs/company/`. Los contratos de API se mantienen en `docs/api/` del mismo repositorio.
