@@ -5,6 +5,7 @@ import { addMaintenancePeriod, formatDateDisplay, parseDisplayDate } from "../..
 export default function EditMaintenanceModal({ record, onClose, onSaved }) {
   const [performedAt, setPerformedAt] = useState(formatDateDisplay(record.performed_at));
   const [notes, setNotes] = useState(record.notes || "");
+  const [ipAddress, setIpAddress] = useState(record.ip_address || "");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const parsedDate = parseDisplayDate(performedAt);
@@ -20,7 +21,9 @@ export default function EditMaintenanceModal({ record, onClose, onSaved }) {
     }
     setSaving(true);
     try {
-      await api.patch(`/inventory/maintenance/${record.id}`, { performed_at: parsedDate, notes });
+      const payload = { performed_at: parsedDate, notes };
+      if (ipAddress.trim() !== String(record.ip_address || "").trim()) payload.ip_address = ipAddress;
+      await api.patch(`/inventory/maintenance/${record.id}`, payload);
       onSaved();
     } catch (err) {
       setError(err?.response?.data?.message || "No se pudo actualizar el mantenimiento.");
@@ -42,6 +45,11 @@ export default function EditMaintenanceModal({ record, onClose, onSaved }) {
               <p className="mb-1"><strong>Equipo:</strong> {record.asset_code || "Sin código"} — {record.item_name}</p>
               <p className="text-muted small mb-3"><strong>Técnico:</strong> {technician}</p>
               {error && <div className="alert alert-danger" role="alert">{error}</div>}
+              <div className="mb-3">
+                <label className="form-label" htmlFor="edit-maintenance-ip">Dirección IP del equipo</label>
+                <input id="edit-maintenance-ip" className="form-control" type="text" maxLength="80" placeholder="Ej. 172.16.1.10" value={ipAddress} onChange={(event) => setIpAddress(event.target.value)} />
+                <small className="text-muted">Déjala vacía si el equipo no tiene una IP definida.</small>
+              </div>
               <div className="mb-3">
                 <label className="form-label" htmlFor="edit-maintenance-date">Fecha realizada</label>
                 <input id="edit-maintenance-date" className="form-control" type="text" inputMode="numeric" placeholder="DD-MM-AAAA" pattern="\d{2}-\d{2}-\d{4}" required value={performedAt} onChange={(event) => setPerformedAt(event.target.value)} />
