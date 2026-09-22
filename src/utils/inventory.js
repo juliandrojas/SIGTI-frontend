@@ -1,4 +1,4 @@
-export const isComputerItem = (item) => String(item?.category || "").toLowerCase() === "computer";
+export const isComputerItem = (item) => ["laptop", "all_in_one", "tower"].includes(String(item?.asset_type || "").toLowerCase());
 
 export const filterPeripheralItems = (items = []) => items.filter((item) => !isComputerItem(item));
 

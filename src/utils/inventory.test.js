@@ -3,9 +3,9 @@ import test from "node:test";
 import { filterComputerItems, filterPeripheralItems, getInventorySearchSuggestions } from "./inventory.js";
 
 const items = [
-  { id: 1, category: "computer", name: "Dell" },
-  { id: 2, category: "component", name: "Mouse" },
-  { id: 3, category: "peripheral", name: "Teclado" },
+  { id: 1, asset_type: "laptop", name: "Dell" },
+  { id: 2, asset_type: "peripheral", name: "Mouse" },
+  { id: 3, asset_type: "peripheral", name: "Teclado" },
 ];
 
 test("separa computadores de los elementos del inventario", () => {

@@ -4,7 +4,7 @@ import { filterPeripheralItems, getInventorySearchSuggestions } from "../../util
 import FeedbackModal from "../../components/FeedbackModal";
 
 const emptyForm = {
-  name: "", category: "component", brand: "", reference: "", model: "", serial_number: "",
+  name: "", asset_type: "peripheral", brand: "", reference: "", model: "", serial_number: "",
   quantity: 1, available_quantity: 1, condition: "good", notes: "",
 };
 
@@ -52,7 +52,7 @@ export default function Inventory() {
   const resetForm = () => { setForm(emptyForm); setEditingId(null); setShowForm(false); };
 
   const editItem = (item) => {
-    setForm({ ...emptyForm, name: item.name || "", category: "component", brand: item.brand || "", reference: item.reference || "", model: item.model || "", serial_number: item.serial_number || "", quantity: Number(item.quantity || 0), available_quantity: Number(item.available_quantity || 0), condition: item.condition || "good", notes: item.notes || "" });
+    setForm({ ...emptyForm, name: item.name || "", asset_type: "peripheral", brand: item.brand || "", reference: item.reference || "", model: item.model || "", serial_number: item.serial_number || "", quantity: Number(item.quantity || 0), available_quantity: Number(item.available_quantity || 0), condition: item.condition || "good", notes: item.notes || "" });
     setEditingId(item.id);
     setShowForm(true);
     setError("");
@@ -70,7 +70,7 @@ export default function Inventory() {
     if (availableQuantity > quantity) return setError("La cantidad disponible no puede superar la cantidad total.");
     setSaving(true);
     try {
-      const payload = { ...form, category: "component", quantity, available_quantity: availableQuantity };
+      const payload = { ...form, asset_type: "peripheral", quantity, available_quantity: availableQuantity };
       if (editingId) await api.patch(`/inventory/items/${editingId}`, payload);
       else await api.post("/inventory/items", payload);
       setMessage(editingId ? "Artículo actualizado correctamente." : "Artículo registrado correctamente.");
