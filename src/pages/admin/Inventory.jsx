@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api/axios";
 import { filterPeripheralItems, getInventorySearchSuggestions } from "../../utils/inventory";
 import FeedbackModal from "../../components/FeedbackModal";
+import RegisterComponent from "./RegisterComponent";
 
 const emptyForm = {
   name: "", asset_type: "peripheral", brand: "", model: "", serial_number: "",
@@ -11,7 +12,8 @@ const emptyForm = {
 const conditionLabels = { good: "Bueno", warning: "Regular", damaged: "Dañado" };
 
 export default function Inventory() {
-  const [items, setItems] = useState([]);
+  const [allItems, setAllItems] = useState([]);
+  const items = filterPeripheralItems(allItems);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -25,7 +27,7 @@ export default function Inventory() {
   const load = async () => {
     try {
       const response = await api.get("/inventory/items");
-      setItems(filterPeripheralItems(response.data));
+      setAllItems(response.data);
     } catch (err) {
       setError(err?.response?.data?.message || "No se pudieron cargar los artículos.");
     } finally {
@@ -38,7 +40,7 @@ export default function Inventory() {
     const loadInitial = async () => {
       try {
         const response = await api.get("/inventory/items");
-        if (active) setItems(filterPeripheralItems(response.data));
+        if (active) setAllItems(response.data);
       } catch (err) {
         if (active) setError(err?.response?.data?.message || "No se pudieron cargar los artículos.");
       } finally {
@@ -111,7 +113,7 @@ export default function Inventory() {
   const suggestions = getInventorySearchSuggestions(items, search);
 
   return <div className="container py-4">
-    <div className="d-flex justify-content-between align-items-center mb-4"><div><p className="text-uppercase text-primary small fw-semibold mb-1">Periféricos</p><h1 className="h3 fw-bold mb-0">Inventario</h1></div><div className="d-flex align-items-center gap-2"><span className="badge text-bg-light border">{filteredItems.length} periféricos</span><button className="btn btn-primary" type="button" onClick={() => { resetForm(); setShowForm(true); }}>Nuevo artículo</button></div></div>
+    <div className="d-flex justify-content-between align-items-center mb-4"><div><p className="text-uppercase text-primary small fw-semibold mb-1">Activos TI</p><h1 className="h3 fw-bold mb-0">Inventario</h1></div><div className="d-flex align-items-center gap-2"><span className="badge text-bg-light border">{filteredItems.length} periféricos</span><button className="btn btn-primary" type="button" onClick={() => { resetForm(); setShowForm(true); }}>Nuevo artículo</button></div></div>
     <FeedbackModal message={message} error={error} onClose={() => { setMessage(""); setError(""); }} />
     {showForm && <div className="card shadow-sm border-0 mb-4"><div className="card-body"><div className="d-flex justify-content-between align-items-center mb-3"><h2 className="h5 mb-0">{editingId ? "Editar artículo" : "Registrar artículo"}</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={resetForm} /></div><form onSubmit={submit} className="row g-3">
       <div className="col-md-6"><label className="form-label" htmlFor="component-name">Nombre *</label><input id="component-name" className="form-control" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></div>
@@ -123,8 +125,10 @@ export default function Inventory() {
       <div className="col-12"><label className="form-label" htmlFor="component-notes">Observaciones</label><textarea id="component-notes" className="form-control" rows="2" value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
       <div className="col-12 d-flex gap-2"><button className="btn btn-primary" type="submit" disabled={saving}>{saving ? "Guardando..." : editingId ? "Guardar cambios" : "Registrar artículo"}</button><button className="btn btn-outline-secondary" type="button" onClick={resetForm}>Cancelar</button></div>
     </form></div></div>}
+    <h2 className="h5 mb-3">Periféricos</h2>
     <div className="row g-3 mb-4"><div className="col-6 col-lg"><div className="card h-100"><div className="card-body py-3"><small className="text-muted d-block">Tipos de componentes</small><strong className="fs-4">{items.length}</strong></div></div></div><div className="col-6 col-lg"><div className="card h-100"><div className="card-body py-3"><small className="text-muted d-block">Unidades totales</small><strong className="fs-4">{inventoryTotals.total}</strong></div></div></div><div className="col-6 col-lg"><div className="card h-100"><div className="card-body py-3"><small className="text-muted d-block">Disponibles</small><strong className="fs-4 text-success">{inventoryTotals.available}</strong></div></div></div><div className="col-6 col-lg"><div className="card h-100"><div className="card-body py-3"><small className="text-muted d-block">Prestadas</small><strong className="fs-4 text-primary">{borrowedUnits}</strong></div></div></div></div>
     <div className="card shadow-sm border-0"><div className="card-body"><div className="row g-2 mb-4"><div className="col-12 position-relative"><label className="visually-hidden" htmlFor="inventory-search">Buscar por nombre</label><input id="inventory-search" className="form-control" placeholder="Buscar por nombre, marca o modelo" value={search} autoComplete="off" onChange={(event) => setSearch(event.target.value)} />{suggestions.length > 0 && <div className="list-group position-absolute w-100 shadow-sm" style={{ zIndex: 10 }} role="listbox" aria-label="Sugerencias de búsqueda">{suggestions.map((suggestion) => <button key={suggestion} type="button" className="list-group-item list-group-item-action" onMouseDown={(event) => event.preventDefault()} onClick={() => setSearch(suggestion)}><i className="bi bi-search me-2 text-muted" aria-hidden="true" />{suggestion}</button>)}</div>}</div></div>{loading ? <p className="text-muted">Cargando...</p> : filteredItems.length === 0 ? <p className="text-muted mb-0">No hay artículos que coincidan.</p> : <div className="table-responsive"><table className="table table-hover align-middle mb-0"><thead><tr><th>Artículo</th><th>Marca / modelo</th><th>Disponibles</th><th>Condición</th><th className="text-end">Acciones</th></tr></thead><tbody>{filteredItems.map((item) => <tr key={item.id}><td className="fw-semibold">{item.name}</td><td>{[item.brand, item.model].filter(Boolean).join(" / ") || "-"}</td><td>{item.available_quantity}</td><td>{conditionLabels[item.condition] || item.condition || "-"}</td><td className="text-end"><button className="btn btn-sm btn-outline-primary me-1" type="button" onClick={() => editItem(item)}>Editar</button><button className="btn btn-sm btn-outline-danger" type="button" onClick={() => remove(item)}>Eliminar</button></td></tr>)}</tbody></table></div>}</div></div>
+    <section className="card card-body mt-4" aria-labelledby="register-equipment-title"><h2 className="h5 mb-3" id="register-equipment-title">Registrar equipo</h2><RegisterComponent embedded existingItems={allItems} onSaved={load} /></section>
     {itemToDelete && <div className="modal d-block" role="dialog" aria-modal="true" aria-labelledby="delete-inventory-title" style={{ background: "rgba(15, 23, 42, .45)" }}><div className="modal-dialog modal-dialog-centered"><div className="modal-content inventory-delete-modal"><div className="modal-header"><h2 className="modal-title h5" id="delete-inventory-title">Eliminar artículo</h2><button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setItemToDelete(null)} /></div><div className="modal-body"><p className="mb-0">¿Eliminar <strong>{itemToDelete.name}</strong>? Esta acción no se puede deshacer.</p></div><div className="modal-footer"><button type="button" className="btn btn-outline-secondary" onClick={() => setItemToDelete(null)}>Cancelar</button><button type="button" className="btn btn-danger" onClick={confirmDelete}>Eliminar</button></div></div></div></div>}
   </div>;
 }

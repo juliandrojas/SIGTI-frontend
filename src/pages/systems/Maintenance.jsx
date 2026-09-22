@@ -8,7 +8,6 @@ import {
   parseDisplayDate,
   todayIso,
 } from "../../utils/maintenance";
-import RegisterComponent from "../admin/RegisterComponent";
 import { filterComputerItems } from "../../utils/inventory";
 import FeedbackModal from "../../components/FeedbackModal";
 import EditMaintenanceModal from "./EditMaintenanceModal";
@@ -116,11 +115,10 @@ export default function Maintenance() {
 
   return <main className="app-page">
     <div className="d-flex justify-content-between align-items-end gap-3 mb-4">
-      <div><p className="page-kicker mb-2">Área de Sistemas</p><h1 className="page-title">Mantenimiento</h1><p className="page-subtitle mb-0">Registra equipos y su mantenimiento semestral.</p></div>
+      <div><p className="page-kicker mb-2">Área de Sistemas</p><h1 className="page-title">Mantenimiento</h1><p className="page-subtitle mb-0">Registra y consulta el mantenimiento semestral de los equipos.</p></div>
       <span className="status-pill"><i className="bi bi-calendar-check me-2" />Periodicidad: 6 meses</span>
     </div>
     <FeedbackModal message={message} error={error} onClose={() => { setMessage(""); setError(""); }} />
-    <div className="card card-body mb-4"><h2 className="h5 mb-3">Registrar equipo</h2><RegisterComponent embedded existingItems={items} onSaved={load} /></div>
     <div className="card card-body mb-4"><h2 className="h5 mb-3">Registrar mantenimiento</h2>
       <form className="row g-3" onSubmit={submit}>
         <div className="col-md-6 position-relative"><label className="form-label" htmlFor="maintenance-item">Equipo</label><input id="maintenance-item" className="form-control" type="search" required={!form.item_id} autoComplete="off" role="combobox" aria-autocomplete="list" aria-expanded={equipmentOpen} aria-controls="maintenance-equipment-options" placeholder="Busca por código EF, equipo o serial" value={equipmentSearch} onFocus={() => setEquipmentOpen(true)} onChange={(event) => { setEquipmentSearch(event.target.value); setForm({ ...form, item_id: "" }); setEquipmentOpen(true); }} onBlur={() => window.setTimeout(() => setEquipmentOpen(false), 150)} />{equipmentOpen && <div id="maintenance-equipment-options" className="list-group position-absolute w-100 shadow-sm maintenance-equipment-options" role="listbox">{filteredEquipment.length ? filteredEquipment.map((item) => <button key={item.id} type="button" className={`list-group-item list-group-item-action text-start ${Number(form.item_id) === Number(item.id) ? "active" : ""}`} role="option" aria-selected={Number(form.item_id) === Number(item.id)} onMouseDown={(event) => event.preventDefault()} onClick={() => { setForm({ ...form, item_id: String(item.id) }); setEquipmentSearch(equipmentLabel(item)); setEquipmentOpen(false); }}><strong className="d-block">{item.asset_code || "Sin código"}</strong><span>{item.name}{item.serial_number ? ` — ${item.serial_number}` : ""}</span></button>) : <div className="list-group-item text-muted">No hay equipos que coincidan.</div>}</div>}</div>
