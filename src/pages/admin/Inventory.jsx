@@ -4,7 +4,7 @@ import { filterPeripheralItems, getInventorySearchSuggestions } from "../../util
 import FeedbackModal from "../../components/FeedbackModal";
 
 const emptyForm = {
-  name: "", asset_type: "peripheral", brand: "", reference: "", model: "", serial_number: "",
+  name: "", asset_type: "peripheral", brand: "", model: "", serial_number: "",
   quantity: 1, available_quantity: 1, condition: "good", notes: "",
 };
 
@@ -52,7 +52,7 @@ export default function Inventory() {
   const resetForm = () => { setForm(emptyForm); setEditingId(null); setShowForm(false); };
 
   const editItem = (item) => {
-    setForm({ ...emptyForm, name: item.name || "", asset_type: "peripheral", brand: item.brand || "", reference: item.reference || "", model: item.model || "", serial_number: item.serial_number || "", quantity: Number(item.quantity || 0), available_quantity: Number(item.available_quantity || 0), condition: item.condition || "good", notes: item.notes || "" });
+    setForm({ ...emptyForm, name: item.name || "", asset_type: "peripheral", brand: item.brand || "", model: item.model || "", serial_number: item.serial_number || "", quantity: Number(item.quantity || 0), available_quantity: Number(item.available_quantity || 0), condition: item.condition || "good", notes: item.notes || "" });
     setEditingId(item.id);
     setShowForm(true);
     setError("");
