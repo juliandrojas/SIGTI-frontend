@@ -41,3 +41,29 @@ export const todayIso = () => {
 export const defaultMaintenanceTasks = () => ["Limpieza interna", "Cambio de pasta térmica"];
 
 export const isMaintenanceRecent = (record, referenceDate) => Boolean(record?.next_due_date && isoDatePattern.test(referenceDate) && record.next_due_date.slice(0, 10) >= referenceDate);
+
+export const summarizeMaintenance = (computers = [], records = [], today = todayIso()) => {
+  const latestByItem = new Map();
+  for (const record of records) {
+    const itemId = Number(record.item_id);
+    const previous = latestByItem.get(itemId);
+    const performedAt = String(record.performed_at || "").slice(0, 10);
+    const previousDate = String(previous?.performed_at || "").slice(0, 10);
+    if (!previous || performedAt > previousDate || (performedAt === previousDate && Number(record.id) > Number(previous.id))) {
+      latestByItem.set(itemId, record);
+    }
+  }
+
+  const limit = new Date(`${today}T00:00:00Z`);
+  limit.setUTCDate(limit.getUTCDate() + 30);
+  const limitIso = limit.toISOString().slice(0, 10);
+  const totals = { overdue: 0, upcoming: 0, current: 0 };
+
+  for (const computer of computers) {
+    const dueDate = String(latestByItem.get(Number(computer.id))?.next_due_date || "").slice(0, 10);
+    if (!isoDatePattern.test(dueDate) || dueDate < today) totals.overdue += 1;
+    else if (dueDate <= limitIso) totals.upcoming += 1;
+    else totals.current += 1;
+  }
+  return totals;
+};

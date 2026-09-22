@@ -1,69 +1,80 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
-import { filterPeripheralItems } from "../../utils/inventory";
+import { filterComputerItems, filterPeripheralItems } from "../../utils/inventory";
+import { summarizeMaintenance } from "../../utils/maintenance";
 import { getStoredUser } from "../../utils/auth";
+
+const StatCard = ({ label, value, icon, color = "", detail = "", column = "col-sm-6 col-xl-4" }) => (
+  <div className={column}>
+    <div className="card stat-card">
+      <div className="card-body">
+        <span className="stat-icon mb-3"><i className={`bi ${icon}`} aria-hidden="true" /></span>
+        <div className="text-muted small">{label}</div>
+        <div className={`stat-value ${color}`}>{value}</div>
+        {detail && <div className="text-muted small mt-1">{detail}</div>}
+      </div>
+    </div>
+  </div>
+);
 
 export default function AdminDashboard() {
   const user = getStoredUser();
   const displayName = [user?.name, user?.lastname].filter(Boolean).join(" ") || "Usuario";
-  const [items, setItems] = useState([]);
-  const [maintenanceRecords, setMaintenanceRecords] = useState([]);
+  const [items, setItems] = useState(null);
+  const [maintenanceRecords, setMaintenanceRecords] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     Promise.allSettled([api.get("/inventory/items"), api.get("/inventory/maintenance")])
       .then(([itemsResult, maintenanceResult]) => {
-        if (itemsResult.status === "fulfilled") setItems(filterPeripheralItems(itemsResult.value.data));
+        if (itemsResult.status === "fulfilled") setItems(itemsResult.value.data);
         if (maintenanceResult.status === "fulfilled") setMaintenanceRecords(maintenanceResult.value.data);
-        if (itemsResult.status === "rejected") {
-          setError(itemsResult.reason?.response?.data?.message || "No se pudieron cargar las estadísticas.");
-        }
+        const failures = [];
+        if (itemsResult.status === "rejected") failures.push("No se pudo cargar el inventario.");
+        if (maintenanceResult.status === "rejected") failures.push("No se pudo cargar el historial de mantenimiento.");
+        setError(failures.join(" "));
       });
   }, []);
 
-  const inventoryTotals = items.reduce((totals, item) => ({
+  const peripherals = filterPeripheralItems(items || []);
+  const computers = filterComputerItems(items || []);
+  const inventoryTotals = peripherals.reduce((totals, item) => ({
     total: totals.total + Number(item.quantity || 0),
     available: totals.available + Number(item.available_quantity || 0),
   }), { total: 0, available: 0 });
   const borrowedUnits = Math.max(inventoryTotals.total - inventoryTotals.available, 0);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const maintenanceLimit = new Date(today);
-  maintenanceLimit.setDate(maintenanceLimit.getDate() + 30);
-  const upcomingMaintenance = maintenanceRecords.filter((record) => {
-    const dueDate = new Date(`${String(record.next_due_date || "").slice(0, 10)}T00:00:00`);
-    return !Number.isNaN(dueDate.getTime()) && dueDate >= today && dueDate <= maintenanceLimit;
-  }).length;
+  const maintenanceTotals = items && maintenanceRecords ? summarizeMaintenance(computers, maintenanceRecords) : null;
+  const inventoryValue = (value) => items ? value : "—";
+  const maintenanceValue = (value) => maintenanceTotals ? value : "—";
 
   return (
     <main className="app-page">
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
         <div>
           <p className="page-kicker mb-2">Centro de control</p>
-          <h1 className="page-title mb-2">Dashboard de inventario</h1>
-          <p className="page-subtitle mb-0">Una vista rápida del estado de tus activos y préstamos.</p>
+          <h1 className="page-title mb-2">Dashboard de activos TI</h1>
+          <p className="page-subtitle mb-0">Resumen de componentes, préstamos y mantenimiento de equipos.</p>
         </div>
         <span className="status-pill"><i className="bi bi-person-circle me-2" aria-hidden="true" />{displayName}</span>
       </div>
       {error && <div className="alert alert-danger" role="alert"><i className="bi bi-exclamation-triangle me-2" aria-hidden="true" />{error}</div>}
-      <section className="row g-3" aria-label="Resumen del inventario y mantenimientos">
-            {[
-              ["Tipos de componentes", items.length, "bi-boxes", ""],
-              ["Unidades totales", inventoryTotals.total, "bi-collection", ""],
-              ["Unidades disponibles", inventoryTotals.available, "bi-check2-circle", "text-success"],
-              ["Unidades prestadas", borrowedUnits, "bi-arrow-left-right", "text-primary"],
-              ["Próximos mantenimientos", upcomingMaintenance, "bi-calendar-check", "text-danger"],
-            ].map(([label, value, icon, color]) => (
-              <div className="col-sm-6 col-xl-4" key={label}>
-                <div className="card stat-card">
-                  <div className="card-body">
-                    <span className="stat-icon mb-3"><i className={`bi ${icon}`} aria-hidden="true" /></span>
-                    <div className="text-muted small">{label}</div>
-                    <div className={`stat-value ${color}`}>{value}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
+      <section aria-labelledby="inventory-summary-title" className="mb-4">
+        <h2 id="inventory-summary-title" className="h5 mb-3">Inventario de componentes</h2>
+        <div className="row g-3">
+          <StatCard label="Tipos de componentes" value={inventoryValue(peripherals.length)} icon="bi-boxes" column="col-sm-6 col-xl-3" />
+          <StatCard label="Unidades totales" value={inventoryValue(inventoryTotals.total)} icon="bi-collection" column="col-sm-6 col-xl-3" />
+          <StatCard label="Unidades disponibles" value={inventoryValue(inventoryTotals.available)} icon="bi-check2-circle" color="text-success" column="col-sm-6 col-xl-3" />
+          <StatCard label="Unidades prestadas" value={inventoryValue(borrowedUnits)} icon="bi-arrow-left-right" color="text-primary" column="col-sm-6 col-xl-3" />
+        </div>
+      </section>
+      <section aria-labelledby="maintenance-summary-title">
+        <h2 id="maintenance-summary-title" className="h5 mb-1">Mantenimiento de equipos</h2>
+        <p className="text-muted small mb-3">Estado del ciclo semestral según el último mantenimiento de cada equipo.</p>
+        <div className="row g-3">
+          <StatCard label="Vencidos" value={maintenanceValue(maintenanceTotals?.overdue)} icon="bi-exclamation-triangle" color="text-danger" detail="Incluye equipos sin mantenimiento" />
+          <StatCard label="Próximos 30 días" value={maintenanceValue(maintenanceTotals?.upcoming)} icon="bi-calendar-event" color="text-warning" detail="Desde hoy hasta dentro de 30 días" />
+          <StatCard label="Al día (6 meses)" value={maintenanceValue(maintenanceTotals?.current)} icon="bi-calendar-check" color="text-success" detail="Vencen después de 30 días" />
+        </div>
       </section>
     </main>
   );
